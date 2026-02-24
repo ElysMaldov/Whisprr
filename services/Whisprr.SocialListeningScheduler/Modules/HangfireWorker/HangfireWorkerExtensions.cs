@@ -5,17 +5,17 @@ namespace Whisprr.SocialListeningScheduler.Modules.HangfireWorker;
 
 public static class HangfireWorkerExtensions
 {
-  public static IServiceCollection AddHangfireWorker(this IServiceCollection services)
+  public static IHostApplicationBuilder AddHangfireWorker(this IHostApplicationBuilder builder)
   {
-    services.AddHangfire(config => config.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+    builder.Services.AddHangfire(config => config.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
         .UseSimpleAssemblyNameTypeSerializer()
         .UseRecommendedSerializerSettings()
         .UseInMemoryStorage());
 
-    services.AddHangfireServer();
-    services.AddSingleton<HangfireWorker>();
+    builder.Services.AddHangfireServer();
+    builder.Services.AddSingleton<HangfireWorker>();
 
-    return services;
+    return builder;
   }
 
   public static IApplicationBuilder UseHangfireWorker(this IApplicationBuilder app)
