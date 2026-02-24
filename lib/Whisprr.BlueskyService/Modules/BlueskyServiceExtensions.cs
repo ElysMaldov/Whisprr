@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Whisprr.BlueskyService.Modules.BlueskyAuthHandler;
@@ -7,6 +6,7 @@ using BlueskyAuthServiceImpl = Whisprr.BlueskyService.Modules.BlueskyAuthService
 using BlueskyServiceImpl = Whisprr.BlueskyService.Modules.BlueskyService.BlueskyService;
 using IBlueskyServiceInterface = Whisprr.BlueskyService.Modules.BlueskyService.IBlueskyService;
 using IBlueskyAuthServiceInterface = Whisprr.BlueskyService.Modules.BlueskyAuthService.IBlueskyAuthService;
+using StackExchange.Redis;
 
 namespace Whisprr.BlueskyService;
 
@@ -41,6 +41,7 @@ public static class BlueskyServiceExtensions
         });
 
         // Session store (requires Redis to be registered first)
+        var redisCheck = builder.Services.FirstOrDefault(d => d.ServiceType == typeof(IDatabase)) ?? throw new InvalidOperationException("Redis IDatabase must be registered before registering IBlueskySessionStore");
         builder.Services.AddSingleton<IBlueskySessionStore, BlueskyRedisSessionStore>();
 
         return builder;
