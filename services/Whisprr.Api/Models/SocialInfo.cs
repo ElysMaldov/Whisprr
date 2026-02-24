@@ -2,7 +2,8 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Whisprr.Contracts.Enums;
 
-namespace Whisprr.SocialScouter.Models;
+
+namespace Whisprr.Api.Models;
 
 /// <summary>
 /// Describes a social information from a post, timeline, feed, etc.

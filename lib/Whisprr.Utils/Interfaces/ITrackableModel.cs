@@ -1,4 +1,4 @@
-namespace Whisprr.Entities.Interfaces;
+namespace Whisprr.Utils.Interfaces;
 
 /// <summary>
 /// Used for models needing to track created and updated times

@@ -1,7 +1,7 @@
 using Whisprr.Contracts.Enums;
 using Whisprr.Utils.Interfaces;
 
-namespace Whisprr.SocialScouter.Models;
+namespace Whisprr.Api.Models;
 
 public class SocialListeningTask : ITrackableModel
 {

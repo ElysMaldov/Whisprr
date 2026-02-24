@@ -1,4 +1,4 @@
-namespace Whisprr.Entities.Enums;
+namespace Whisprr.Contracts.Enums;
 
 public enum TaskProgressStatus
 {

@@ -10,4 +10,9 @@
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\lib\Whisprr.Contracts\Whisprr.Contracts.csproj" />
+    <ProjectReference Include="..\..\lib\Whisprr.Utils\Whisprr.Utils.csproj" />
+  </ItemGroup>
+
 </Project>
