@@ -12,8 +12,7 @@ public static class DbContextExtensions
       var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
       options.UseNpgsql(connectionString, npgsqlOptions =>
       {
-        npgsqlOptions.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName);
-        npgsqlOptions.MigrationsHistoryTable("__EFMigrationsHistory", "scheduler");
+        npgsqlOptions.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName); // Sets migration in the root folder of this project
 
         // Map enums to PostgreSQL native enum types
         npgsqlOptions.MapEnum<TaskProgressStatus>();
