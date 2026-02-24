@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Whisprr.Contracts.Enums;
 using Whisprr.SocialListeningScheduler.Models;
 
 namespace Whisprr.SocialListeningScheduler.Data;
@@ -18,6 +19,9 @@ internal class AppDbContext : DbContext
   {
     base.OnModelCreating(modelBuilder);
 
+    // Register PostgreSQL enum types for migrations
+    modelBuilder.HasPostgresEnum<TaskProgressStatus>("scheduler");
+
     // SocialTopic: Keywords conversion (array <-> comma-separated string)
     modelBuilder.Entity<SocialTopic>(entity =>
     {
@@ -33,12 +37,9 @@ internal class AppDbContext : DbContext
               v => new System.Globalization.CultureInfo(v));
     });
 
-    // SocialListeningTask: Enum-to-string conversion for Status
+    // SocialListeningTask configuration
     modelBuilder.Entity<SocialListeningTask>(entity =>
     {
-      entity.Property(e => e.Status)
-          .HasConversion<string>();
-
       // Cascade delete when SocialTopic is deleted
       entity.HasOne(e => e.SocialTopic)
           .WithMany(e => e.SocialListeningTasks)
