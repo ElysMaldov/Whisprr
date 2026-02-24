@@ -8,29 +8,25 @@ namespace Whisprr.SocialListeningScheduler.Modules.SocialListeningTaskPublisher;
 internal interface ISocialListeningTaskPublisher
 {
   /// <summary>
-  /// Creates new social listening tasks for every DataSource × SocialTopic combination.
-  /// Tasks are saved to the database with Pending status.
+  /// Creates social listening tasks by joining all DataSource × SocialTopic combinations.
+  /// Tasks are returned but NOT saved to the database - they will be saved during publishing
+  /// using the Transactional Outbox pattern.
   /// </summary>
-  /// <returns>An array of newly created <see cref="SocialListeningTask"/> with related SocialTopic and DataSource populated.</returns>
-  Task<SocialListeningTask[]> CreateNewTasks();
-
-  /// <summary>
-  /// Retrieves pending social listening tasks from the database.
-  /// </summary>
-  /// <returns>An array of pending <see cref="SocialListeningTask"/> with related SocialTopic and DataSource included.</returns>
+  /// <returns>An array of <see cref="SocialListeningTask"/> with related SocialTopic and DataSource populated.</returns>
   Task<SocialListeningTask[]> ArrangeTasks();
 
   /// <summary>
-  /// Publishes the specified social listening tasks.
+  /// Publishes the specified social listening tasks using the Transactional Outbox pattern.
+  /// For each task, saves it to the database and publishes the event atomically.
   /// </summary>
   /// <param name="tasks">The tasks to publish.</param>
   /// <returns>A task representing the asynchronous operation.</returns>
   Task PublishTasks(SocialListeningTask[] tasks);
 
   /// <summary>
-  /// Creates new tasks, retrieves pending tasks, and publishes them.
-  /// This is the main orchestration method that combines all operations.
+  /// Arranges tasks from DataSource × SocialTopic combinations and publishes them.
+  /// This is the main orchestration method that uses the Transactional Outbox pattern.
   /// </summary>
   /// <returns>A task representing the asynchronous operation.</returns>
-  Task PublishNewTasks();
+  Task ArrangeAndPublishTasks();
 }

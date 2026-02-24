@@ -1,3 +1,4 @@
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Whisprr.Contracts.Enums;
@@ -42,6 +43,10 @@ internal class AppDbContext : DbContext
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {
     base.OnModelCreating(modelBuilder);
+
+    // Add MassTransit Transactional Outbox entities (OutboxMessage, OutboxState, InboxState)
+    // This enables the Transactional Outbox pattern for reliable message delivery
+    modelBuilder.AddTransactionalOutboxEntities();
 
     // Register PostgreSQL enum types for migrations
     modelBuilder.HasPostgresEnum<TaskProgressStatus>();

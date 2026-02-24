@@ -26,8 +26,8 @@ internal static class HangfireExtensions
 
     // name the ids like the main worker method for easier maintenance
     recurringJobManager.AddOrUpdate<ISocialListeningTaskPublisher>(
-        nameof(ISocialListeningTaskPublisher.PublishNewTasks),
-        worker => worker.PublishNewTasks(),
+        nameof(ISocialListeningTaskPublisher.ArrangeAndPublishTasks),
+        worker => worker.ArrangeAndPublishTasks(),
         "0 */15 * * * *");
 
     return app;
