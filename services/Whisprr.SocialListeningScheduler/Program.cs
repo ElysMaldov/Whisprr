@@ -1,4 +1,5 @@
 using MassTransit;
+using Whisprr.SocialListeningScheduler.Modules.HangfireWorker;
 
 var builder = Host.CreateApplicationBuilder(args);
 
@@ -17,5 +18,10 @@ builder.Services.AddMassTransit(busConfigurator =>
   });
 });
 
+builder.Services.AddHangfireWorker();
+
 var host = builder.Build();
+
+host.UseHangfireWorker();
+
 host.Run();
