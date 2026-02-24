@@ -26,6 +26,7 @@ public class RedisCachingService(IDatabase database, IOptions<RedisOptions> opti
       return default;
     }
 
+    // TODO if performance gains is needed, at generators for known models and reflection as fallback for unknown models
     return JsonSerializer.Deserialize<T>((string)json!);
   }
 }
