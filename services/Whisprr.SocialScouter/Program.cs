@@ -1,4 +1,6 @@
 using Whisprr.BlueskyService;
+using Whisprr.SocialScouter.Modules.Caching;
+using Whisprr.SocialScouter.Modules.SocialListener;
 // using Whisprr.Infrastructure.MessageBroker;
 // using Whisprr.Infrastructure.Redis;
 // using Whisprr.SocialScouter.Modules.SocialListener;
@@ -6,10 +8,10 @@ using Whisprr.BlueskyService;
 var builder = Host.CreateApplicationBuilder(args);
 
 builder
-    // .AddRedis()
-    .AddBlueskyServices();
-// .AddMessageBroker()
-// .AddSocialListenerServices();
+    .AddCaching()
+    .AddBlueskyServices()
+    // .AddMessageBroker()
+    .AddSocialListenerServices();
 
 var host = builder.Build();
 host.Run();

@@ -1,0 +1,35 @@
+services:
+  postgres:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: whisprr-dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql
+    ports:
+      - 5432:5432
+
+  redis:
+    image: redis/redis-stack:latest
+    volumes:
+      - redisdata:/data
+    ports:
+      - 6379:6379
+      - 8001:8001
+
+  rabbitmq:
+    image: rabbitmq:4-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: whisprr
+      RABBITMQ_DEFAULT_PASS: whisprr
+    volumes:
+      - rabbitmqdata:/var/lib/rabbitmq
+    ports:
+      - 5672:5672     # AMQP port
+      - 15672:15672   # Management UI
+
+volumes:
+  pgdata:
+  redisdata:
+  rabbitmqdata:
