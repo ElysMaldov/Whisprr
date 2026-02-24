@@ -1,6 +1,11 @@
+using Whisprr.SocialListeningScheduler.Models;
+
 namespace Whisprr.SocialListeningScheduler.Modules.SocialListeningTaskPublisher;
 
-public interface ISocialListeningTaskPublisher
+interface ISocialListeningTaskPublisher
 {
+  Task<SocialListeningTask[]> ArrangeTasks();
+  Task PublishTasks(SocialListeningTask[] tasks);
 
+  Task ArrangeAndPublishTasks();
 }

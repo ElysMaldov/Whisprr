@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Whisprr.Contracts.Enums;
-using Whisprr.SocialListeningScheduler.Data.Seeding;
 using Whisprr.SocialListeningScheduler.Models;
 
 namespace Whisprr.SocialListeningScheduler.Data;
@@ -17,13 +16,23 @@ internal class AppDbContext : DbContext
   {
     base.OnConfiguring(optionsBuilder);
 
-    optionsBuilder.UseAsyncSeeding(async (context, _, cancellationToken) =>
-    {
-      if (context is AppDbContext appContext)
-      {
-        await AppDbContextSeeder.SeedAsync(appContext, cancellationToken);
-      }
-    });
+    // Use these if I need to seed whenever a migration happens too
+    // optionsBuilder.UseSeeding((context, _) =>
+    // {
+    //   if (context is AppDbContext appContext)
+    //   {
+    //     // Synchronously wait for the async seed operation
+    //     AppDbContextSeeder.SeedAsync(appContext).GetAwaiter().GetResult();
+    //   }
+    // });
+
+    // optionsBuilder.UseAsyncSeeding(async (context, _, cancellationToken) =>
+    // {
+    //   if (context is AppDbContext appContext)
+    //   {
+    //     await AppDbContextSeeder.SeedAsync(appContext, cancellationToken);
+    //   }
+    // });
   }
 
   public DbSet<DataSource> DataSources { get; set; } = null!;
