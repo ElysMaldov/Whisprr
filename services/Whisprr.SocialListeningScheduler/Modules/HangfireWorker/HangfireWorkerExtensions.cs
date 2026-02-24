@@ -1,4 +1,5 @@
 using Hangfire;
+using Hangfire.Dashboard;
 
 namespace Whisprr.SocialListeningScheduler.Modules.HangfireWorker;
 
@@ -17,16 +18,25 @@ public static class HangfireWorkerExtensions
     return services;
   }
 
-  public static IHost UseHangfireWorker(this IHost host)
+  public static IApplicationBuilder UseHangfireWorker(this IApplicationBuilder app)
   {
-    using var scope = host.Services.CreateScope();
+    app.UseHangfireDashboard("/hangfire", new DashboardOptions
+    {
+      IsReadOnlyFunc = (DashboardContext dashboardContext) =>
+      {
+        var context = dashboardContext.GetHttpContext();
+        return !context.User.IsInRole("Admin");
+      }
+    });
+
+    using var scope = app.ApplicationServices.CreateScope();
     var recurringJobManager = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
 
     recurringJobManager.AddOrUpdate<HangfireWorker>(
         "empty-job",
         worker => worker.Execute(),
-        "*/5 * * * * *");
+        "*/10 * * * * *");
 
-    return host;
+    return app;
   }
 }
