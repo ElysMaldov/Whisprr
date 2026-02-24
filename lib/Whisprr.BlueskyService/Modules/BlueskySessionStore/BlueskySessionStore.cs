@@ -1,10 +1,10 @@
 
 using Whisprr.BlueskyService.Models.Domain;
-using Whisprr.Caching.Interfaces;
+using Whisprr.Caching.Modules;
 
 namespace Whisprr.BlueskyService.Modules.BlueskySessionStore;
 
-public class BlueskySessionStore(ICaching cache) : IBlueskySessionStore
+public class BlueskySessionStore(CachingService cache) : IBlueskySessionStore
 {
   private string _sessionKey = "bluesky-session";
 

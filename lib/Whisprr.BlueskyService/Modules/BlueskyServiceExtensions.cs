@@ -6,7 +6,7 @@ using BlueskyAuthServiceImpl = Whisprr.BlueskyService.Modules.BlueskyAuthService
 using BlueskyServiceImpl = Whisprr.BlueskyService.Modules.BlueskyService.BlueskyService;
 using IBlueskyServiceInterface = Whisprr.BlueskyService.Modules.BlueskyService.IBlueskyService;
 using IBlueskyAuthServiceInterface = Whisprr.BlueskyService.Modules.BlueskyAuthService.IBlueskyAuthService;
-using Whisprr.Caching.Interfaces;
+using Whisprr.Caching.Modules;
 
 namespace Whisprr.BlueskyService;
 
@@ -41,7 +41,7 @@ public static class BlueskyServiceExtensions
         });
 
         // Session store (requires ICaching to be registered first)
-        if (builder.Services.FirstOrDefault(d => d.ServiceType == typeof(ICaching)) == null) throw new InvalidOperationException("ICaching must be registered");
+        if (builder.Services.FirstOrDefault(d => d.ServiceType == typeof(CachingService)) == null) throw new InvalidOperationException("ICaching must be registered");
         builder.Services.AddSingleton<IBlueskySessionStore, BlueskySessionStore>();
 
         return builder;
