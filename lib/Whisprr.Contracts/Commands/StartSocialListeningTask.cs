@@ -2,5 +2,7 @@ namespace Whisprr.Contracts.Commands;
 
 public class StartSocialListeningTask
 {
-
+  public Guid TaskId { get; set; }
+  public DateTimeOffset CreatedAt { get; set; }
+  public required string Query { get; set; }
 }
