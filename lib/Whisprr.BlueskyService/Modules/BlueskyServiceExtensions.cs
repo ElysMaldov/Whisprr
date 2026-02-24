@@ -6,7 +6,7 @@ using BlueskyAuthServiceImpl = Whisprr.BlueskyService.Modules.BlueskyAuthService
 using BlueskyServiceImpl = Whisprr.BlueskyService.Modules.BlueskyService.BlueskyService;
 using IBlueskyServiceInterface = Whisprr.BlueskyService.Modules.BlueskyService.IBlueskyService;
 using IBlueskyAuthServiceInterface = Whisprr.BlueskyService.Modules.BlueskyAuthService.IBlueskyAuthService;
-using StackExchange.Redis;
+using Whisprr.Caching.Interfaces;
 
 namespace Whisprr.BlueskyService;
 
@@ -40,9 +40,9 @@ public static class BlueskyServiceExtensions
             client.BaseAddress = new Uri(baseUrl);
         });
 
-        // Session store (requires Redis to be registered first)
-        var redisCheck = builder.Services.FirstOrDefault(d => d.ServiceType == typeof(IDatabase)) ?? throw new InvalidOperationException("Redis IDatabase must be registered before registering IBlueskySessionStore");
-        builder.Services.AddSingleton<IBlueskySessionStore, BlueskyRedisSessionStore>();
+        // Session store (requires ICaching to be registered first)
+        if (builder.Services.FirstOrDefault(d => d.ServiceType == typeof(ICaching)) == null) throw new InvalidOperationException("ICaching must be registered");
+        builder.Services.AddSingleton<IBlueskySessionStore, BlueskySessionStore>();
 
         return builder;
     }

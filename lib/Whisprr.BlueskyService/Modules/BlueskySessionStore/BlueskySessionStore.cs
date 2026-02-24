@@ -1,23 +1,22 @@
 
-using StackExchange.Redis;
 using Whisprr.BlueskyService.Models.Domain;
+using Whisprr.Caching.Interfaces;
 
 namespace Whisprr.BlueskyService.Modules.BlueskySessionStore;
 
-public class BlueskyRedisSessionStore(IDatabase db) : IBlueskySessionStore
+public class BlueskySessionStore(ICaching cache) : IBlueskySessionStore
 {
   private string _sessionKey = "bluesky-session";
 
   public async Task SaveSessionAsync(BlueskySession session)
   {
-    var hash = session.ToHash();
-    await db.HashSetAsync(_sessionKey, hash);
+    await cache.SetAsync(_sessionKey, session);
   }
 
   public async Task<BlueskySession?> GetSessionAsync()
   {
-    var hashFields = await db.HashGetAllAsync(_sessionKey);
+    var session = await cache.GetAsync<BlueskySession>(_sessionKey);
 
-    return hashFields.ToBlueskySession();
+    return session;
   }
 }

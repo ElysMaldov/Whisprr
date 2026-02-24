@@ -1,10 +1,9 @@
 using Whisprr.BlueskyService.Models.Domain;
 
-namespace Whisprr.BlueskyService.Modules.BlueskyAuthService
+namespace Whisprr.BlueskyService.Modules.BlueskyAuthService;
+
+public interface IBlueskyAuthService
 {
-  public interface IBlueskyAuthService
-  {
-    public Task<BlueskySession> CreateSession(string bskyHandle, string bskyPassword);
-    public Task<BlueskySession> RefreshSession(string refreshToken);
-  }
+  public Task<BlueskySession> CreateSession(string bskyHandle, string bskyPassword);
+  public Task<BlueskySession> RefreshSession(string refreshToken);
 }
