@@ -1,6 +1,7 @@
 namespace Whisprr.Contracts.Events;
 
-public class UserCreated
+public record UserCreated
 {
-
+  public Guid UserId { get; set; }
+  public Guid CorrelationId { get; set; }
 }

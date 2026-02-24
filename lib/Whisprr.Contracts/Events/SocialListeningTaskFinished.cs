@@ -1,6 +1,7 @@
 namespace Whisprr.Contracts.Events;
 
-public class SocialListeningTaskFinished
+public record SocialListeningTaskFinished
 {
-
+  public Guid TaskId { get; set; }
+  public Guid CorrelationId { get; set; }
 }
