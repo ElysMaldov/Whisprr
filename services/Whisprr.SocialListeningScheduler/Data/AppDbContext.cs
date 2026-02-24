@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Whisprr.Contracts.Enums;
+using Whisprr.SocialListeningScheduler.Data.Seeding;
 using Whisprr.SocialListeningScheduler.Models;
 
 namespace Whisprr.SocialListeningScheduler.Data;
@@ -10,6 +11,19 @@ internal class AppDbContext : DbContext
   public AppDbContext(DbContextOptions<AppDbContext> options)
       : base(options)
   {
+  }
+
+  protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+  {
+    base.OnConfiguring(optionsBuilder);
+
+    optionsBuilder.UseAsyncSeeding(async (context, _, cancellationToken) =>
+    {
+      if (context is AppDbContext appContext)
+      {
+        await AppDbContextSeeder.SeedAsync(appContext, cancellationToken);
+      }
+    });
   }
 
   public DbSet<DataSource> DataSources { get; set; } = null!;

@@ -13,4 +13,7 @@ var app = builder.Build();
 
 app.UseHangfireWorker();
 
+// Run database seeder on startup if configured
+await app.SeedDatabaseAsync();
+
 app.Run();
