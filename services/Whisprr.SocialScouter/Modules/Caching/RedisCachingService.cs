@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 using Whisprr.Caching.Modules;
@@ -6,14 +7,25 @@ namespace Whisprr.SocialScouter.Modules.Caching;
 
 public class RedisCachingService(IDatabase database, IOptions<RedisOptions> options) : CachingService
 {
-  public override Task<bool> SetAsync<T>(string key, T value, TimeSpan? expiry = null)
+  public override required string Prefix { get; init; } = options.Value.KeyPrefix;
+
+  public override async Task<bool> SetAsync<T>(string key, T value, TimeSpan? expiry)
   {
-    throw new NotImplementedException();
+    var cacheKey = BuildCacheKey(key);
+    var json = JsonSerializer.Serialize(value);
+    return await database.StringSetAsync(cacheKey, json, expiry ?? default);
   }
 
-  public override Task<T?> GetAsync<T>(string key) where T : default
+  public override async Task<T?> GetAsync<T>(string key) where T : default
   {
-    throw new NotImplementedException();
-  }
+    var cacheKey = BuildCacheKey(key);
+    var json = await database.StringGetAsync(cacheKey);
 
+    if (json.IsNullOrEmpty)
+    {
+      return default;
+    }
+
+    return JsonSerializer.Deserialize<T>((string)json!);
+  }
 }
