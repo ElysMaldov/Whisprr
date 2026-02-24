@@ -20,18 +20,12 @@ public static class HangfireWorkerExtensions
 
   public static IApplicationBuilder UseHangfireWorker(this IApplicationBuilder app)
   {
-    app.UseHangfireDashboard("/hangfire", new DashboardOptions
-    {
-      IsReadOnlyFunc = (DashboardContext dashboardContext) =>
-      {
-        var context = dashboardContext.GetHttpContext();
-        return !context.User.IsInRole("Admin");
-      }
-    });
+    app.UseHangfireDashboard("/hangfire");
 
     using var scope = app.ApplicationServices.CreateScope();
     var recurringJobManager = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
 
+    // TODO finish handling this
     recurringJobManager.AddOrUpdate<HangfireWorker>(
         "empty-job",
         worker => worker.Execute(),
