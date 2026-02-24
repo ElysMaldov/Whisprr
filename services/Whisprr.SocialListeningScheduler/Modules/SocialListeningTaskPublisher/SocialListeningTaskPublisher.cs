@@ -1,7 +1,7 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using Whisprr.Contracts.Commands;
 using Whisprr.Contracts.Enums;
-using Whisprr.Contracts.Events;
 using Whisprr.SocialListeningScheduler.Data;
 using Whisprr.SocialListeningScheduler.Models;
 
@@ -16,12 +16,35 @@ namespace Whisprr.SocialListeningScheduler.Modules.SocialListeningTaskPublisher;
 internal partial class SocialListeningTaskPublisher(AppDbContext dbContext, IPublishEndpoint publishEndpoint, ILogger<SocialListeningTaskPublisher> logger) : ISocialListeningTaskPublisher
 {
   /// <summary>
-  /// Creates social listening tasks by joining all DataSource × SocialTopic combinations.
-  /// Tasks are returned but NOT saved to the database - they will be saved during publishing
-  /// using the Transactional Outbox pattern.
+  /// Orchestrates the full workflow: arranges tasks from DataSource × SocialTopic combinations
+  /// and publishes them using the Transactional Outbox pattern.
   /// </summary>
-  /// <returns>An array of <see cref="SocialListeningTask"/> entities with related SocialTopic and DataSource populated.</returns>
-  public async Task<SocialListeningTask[]> ArrangeTasks()
+  /// <returns>A task representing the asynchronous operation.</returns>
+  public async Task ArrangeAndPublishTasks()
+  {
+    // Step 1: Arrange and save tasks to database
+    await ArrangeTasks();
+
+    // Step 2: Fetch queued tasks with populated SocialTopic
+    var queuedTasks = await FetchQueuedTasks();
+
+    if (queuedTasks is null || queuedTasks.Length == 0)
+    {
+      LogNoTasksToPublish(logger);
+      return;
+    }
+
+    // Step 3: Publish the tasks
+    await PublishTasks(queuedTasks);
+  }
+
+
+  /// <summary>
+  /// Creates social listening tasks by joining all DataSource × SocialTopic combinations
+  /// and saves them to the database.
+  /// </summary>
+  /// <returns>A task representing the asynchronous operation.</returns>
+  private async Task ArrangeTasks()
   {
     try
     {
@@ -29,8 +52,6 @@ internal partial class SocialListeningTaskPublisher(AppDbContext dbContext, IPub
 
       var dataSources = await dbContext.DataSources.AsNoTracking().ToListAsync();
       var socialTopics = await dbContext.SocialTopics.AsNoTracking().ToListAsync();
-
-      var tasks = new List<SocialListeningTask>();
 
       foreach (var dataSource in dataSources)
       {
@@ -41,16 +62,16 @@ internal partial class SocialListeningTaskPublisher(AppDbContext dbContext, IPub
             Id = Guid.NewGuid(),
             CreatedAt = DateTimeOffset.UtcNow,
             Status = TaskProgressStatus.Queued,
-            SocialTopic = socialTopic,
-            DataSource = dataSource
+            SocialTopicId = socialTopic.Id,
+            SourcePlatformId = dataSource.Id,
           };
-          tasks.Add(task);
+          dbContext.SocialListeningTasks.Add(task);
         }
       }
 
-      LogTasksArranged(logger, tasks.Count);
+      await dbContext.SaveChangesAsync();
 
-      return tasks.ToArray();
+      LogTasksArranged(logger, dataSources.Count * socialTopics.Count);
     }
     catch (Exception ex)
     {
@@ -60,13 +81,40 @@ internal partial class SocialListeningTaskPublisher(AppDbContext dbContext, IPub
   }
 
   /// <summary>
+  /// Fetches the newly created tasks from the database with populated SocialTopic.
+  /// </summary>
+  /// <returns>An array of <see cref="SocialListeningTask"/> entities with SocialTopic populated.</returns>
+  private async Task<SocialListeningTask[]> FetchQueuedTasks()
+  {
+    try
+    {
+      LogFetchingQueuedTasks(logger);
+
+      var tasks = await dbContext.SocialListeningTasks
+        .AsNoTracking()
+        .Include(t => t.SocialTopic)
+        .Where(t => t.Status == TaskProgressStatus.Queued)
+        .ToArrayAsync();
+
+      LogFetchedQueuedTasks(logger, tasks.Length);
+
+      return tasks;
+    }
+    catch (Exception ex)
+    {
+      LogFetchQueuedTasksError(logger, ex);
+      throw;
+    }
+  }
+
+  /// <summary>
   /// Publishes the specified social listening tasks using the Transactional Outbox pattern.
-  /// For each task, saves it to the database and publishes a <see cref="SocialListeningTaskQueued"/> event
+  /// For each task, saves it to the database and publishes a <see cref="StartSocialListeningTask"/> command
   /// within the same database transaction, ensuring atomicity.
   /// </summary>
   /// <param name="tasks">The tasks to publish.</param>
   /// <returns>A task representing the asynchronous operation.</returns>
-  public async Task PublishTasks(SocialListeningTask[] tasks)
+  private async Task PublishTasks(SocialListeningTask[] tasks)
   {
     try
     {
@@ -74,13 +122,10 @@ internal partial class SocialListeningTaskPublisher(AppDbContext dbContext, IPub
 
       foreach (var task in tasks)
       {
-        // Save the task to the database
-        dbContext.SocialListeningTasks.Add(task);
-
-        // Publish the event - MassTransit's Transactional Outbox ensures this is stored
+        // Publish the command - MassTransit's Transactional Outbox ensures this is stored
         // in the outbox table within the same database transaction as the task save.
-        // The event will be published asynchronously by the outbox delivery service.
-        var @event = new SocialListeningTaskQueued
+        // The command will be published asynchronously by the outbox delivery service.
+        var command = new StartSocialListeningTask
         {
           TaskId = task.Id,
           CorrelationId = Guid.NewGuid(),
@@ -88,7 +133,7 @@ internal partial class SocialListeningTaskPublisher(AppDbContext dbContext, IPub
           Query = task.Query
         };
 
-        await publishEndpoint.Publish(@event);
+        await publishEndpoint.Publish(command);
       }
 
       // Save changes - both the tasks and the outbox messages are committed atomically
@@ -103,24 +148,6 @@ internal partial class SocialListeningTaskPublisher(AppDbContext dbContext, IPub
     }
   }
 
-  /// <summary>
-  /// Orchestrates the full workflow: arranges tasks from DataSource × SocialTopic combinations
-  /// and publishes them using the Transactional Outbox pattern.
-  /// </summary>
-  /// <returns>A task representing the asynchronous operation.</returns>
-  public async Task ArrangeAndPublishTasks()
-  {
-    var tasks = await ArrangeTasks();
-
-    if (tasks is not null && tasks.Length != 0)
-    {
-      await PublishTasks(tasks);
-    }
-    else
-    {
-      LogNoTasksToPublish(logger);
-    }
-  }
 
   [LoggerMessage(
       Level = LogLevel.Information,
@@ -136,6 +163,21 @@ internal partial class SocialListeningTaskPublisher(AppDbContext dbContext, IPub
       Level = LogLevel.Error,
       Message = "Failed to arrange social listening tasks")]
   static partial void LogTaskArrangementError(ILogger<SocialListeningTaskPublisher> logger, Exception ex);
+
+  [LoggerMessage(
+      Level = LogLevel.Information,
+      Message = "Fetching queued social listening tasks")]
+  static partial void LogFetchingQueuedTasks(ILogger<SocialListeningTaskPublisher> logger);
+
+  [LoggerMessage(
+      Level = LogLevel.Information,
+      Message = "Fetched {TaskCount} queued social listening tasks")]
+  static partial void LogFetchedQueuedTasks(ILogger<SocialListeningTaskPublisher> logger, int taskCount);
+
+  [LoggerMessage(
+      Level = LogLevel.Error,
+      Message = "Failed to fetch queued social listening tasks")]
+  static partial void LogFetchQueuedTasksError(ILogger<SocialListeningTaskPublisher> logger, Exception ex);
 
   [LoggerMessage(
       Level = LogLevel.Information,
