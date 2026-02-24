@@ -56,12 +56,16 @@ public partial class SocialListenerWorker(
         {
             var socialInfos = await listener.Search(task);
 
-            // Push each SocialInfo to the output channel one by one
-            foreach (var socialInfo in socialInfos)
+            // Parallel write with bounded concurrency for maximum throughput
+            var options = new ParallelOptions
             {
-                await socialInfoChannelWriter.WriteAsync(socialInfo, stoppingToken);
-                LogPushedSocialInfo(logger, socialInfo.Id, listenerType);
-            }
+                MaxDegreeOfParallelism = 4,
+                CancellationToken = stoppingToken
+            };
+
+            await Parallel.ForEachAsync(socialInfos, options, socialInfoChannelWriter.WriteAsync);
+
+            LogPushedSocialInfoBatch(logger, listenerType, socialInfos.Length);
 
             LogListenerCompleted(logger, listenerType, task.Id, socialInfos.Length);
         }
@@ -89,8 +93,8 @@ public partial class SocialListenerWorker(
 
     [LoggerMessage(
         Level = LogLevel.Debug,
-        Message = "Pushed SocialInfo {SocialInfoId} to channel from {ListenerType}")]
-    static partial void LogPushedSocialInfo(ILogger<SocialListenerWorker> logger, Guid socialInfoId, string listenerType);
+        Message = "Pushed batch of {Count} SocialInfos to channel from {ListenerType}")]
+    static partial void LogPushedSocialInfoBatch(ILogger<SocialListenerWorker> logger, string listenerType, int count);
 
     [LoggerMessage(
         Level = LogLevel.Information,

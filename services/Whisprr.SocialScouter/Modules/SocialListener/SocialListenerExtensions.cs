@@ -28,7 +28,7 @@ public static class SocialListenerExtensions
         builder.Services.AddSingleton<Channel<SocialInfo>>(_ =>
             Channel.CreateUnbounded<SocialInfo>(new UnboundedChannelOptions
             {
-                SingleReader = true,
+                SingleReader = false,
                 SingleWriter = false
             }));
 
