@@ -56,14 +56,10 @@ public partial class SocialListenerWorker(
         {
             var socialInfos = await listener.Search(task);
 
-            // Parallel write with bounded concurrency for maximum throughput
-            var options = new ParallelOptions
+            foreach (var info in socialInfos)
             {
-                MaxDegreeOfParallelism = 4,
-                CancellationToken = stoppingToken
-            };
-
-            await Parallel.ForEachAsync(socialInfos, options, socialInfoChannelWriter.WriteAsync);
+                await socialInfoChannelWriter.WriteAsync(info, stoppingToken);
+            }
 
             LogPushedSocialInfoBatch(logger, listenerType, socialInfos.Length);
 

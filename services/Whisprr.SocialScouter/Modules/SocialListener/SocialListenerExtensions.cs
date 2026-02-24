@@ -18,16 +18,18 @@ public static class SocialListenerExtensions
     {
         // Input channel: SocialTopicListeningTask (consumed by SocialListenerWorker)
         builder.Services.AddSingleton<Channel<SocialListeningTask>>(_ =>
-            Channel.CreateUnbounded<SocialListeningTask>(new UnboundedChannelOptions
+            Channel.CreateBounded<SocialListeningTask>(new BoundedChannelOptions(1_000)
             {
+                FullMode = BoundedChannelFullMode.Wait,
                 SingleReader = false,
                 SingleWriter = false
             }));
 
         // Output channel: SocialInfo (produced by SocialListenerWorker, consumed by SocialInfoProcessorWorker)
         builder.Services.AddSingleton<Channel<SocialInfo>>(_ =>
-            Channel.CreateUnbounded<SocialInfo>(new UnboundedChannelOptions
+            Channel.CreateBounded<SocialInfo>(new BoundedChannelOptions(1_000)
             {
+                FullMode = BoundedChannelFullMode.Wait,
                 SingleReader = false,
                 SingleWriter = false
             }));
