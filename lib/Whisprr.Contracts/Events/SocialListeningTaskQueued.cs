@@ -1,6 +1,6 @@
 namespace Whisprr.Contracts.Events;
 
-public class SocialListeningTaskQueued
+public record SocialListeningTaskQueued
 {
   public Guid TaskId { get; set; }
   public DateTimeOffset CreatedAt { get; set; }

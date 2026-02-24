@@ -1,6 +1,6 @@
 namespace Whisprr.Contracts.Commands;
 
-public class StartSocialListeningTask
+public record StartSocialListeningTask
 {
   public Guid TaskId { get; set; }
   public DateTimeOffset CreatedAt { get; set; }

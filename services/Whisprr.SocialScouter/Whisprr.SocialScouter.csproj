@@ -8,13 +8,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.8" />
+    <PackageReference Include="MassTransit" Version="8.5.8" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.3" />
     <PackageReference Include="StackExchange.Redis" Version="2.11.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\lib\Whisprr.BlueskyService\Whisprr.BlueskyService.csproj" />
+    <ProjectReference Include="..\..\lib\Whisprr.Contracts\Whisprr.Contracts.csproj" />
+    <ProjectReference Include="..\..\lib\Whisprr.MessageBroker\Whisprr.MessageBroker.csproj" />
     <ProjectReference Include="..\..\lib\Whisprr.Utils\Whisprr.Utils.csproj" />
   </ItemGroup>
 </Project>
