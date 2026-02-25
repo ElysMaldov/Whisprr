@@ -1,3 +1,5 @@
+using Whisprr.Api.Services;
+
 namespace Whisprr.Api.Infrastructure;
 
 public static class ApiExtensions
@@ -6,6 +8,11 @@ public static class ApiExtensions
     {
         builder.Services.AddControllers();
         builder.Services.AddAuthorization();
+
+        // Register application services
+        builder.Services.AddScoped<ISocialTopicService, SocialTopicService>();
+        builder.Services.AddScoped<ISocialListeningTaskService, SocialListeningTaskService>();
+        builder.Services.AddScoped<ISocialInfoService, SocialInfoService>();
 
         return builder;
     }
