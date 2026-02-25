@@ -1,33 +1,8 @@
-import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
-import AuthRepository from "./data/repositories/auth";
-import AuthService from "./data/services/auth";
-import { appAxios } from "./lib/app-axios";
-import { queryClient } from "./lib/query-client";
-import { routeTree } from "./routeTree.gen";
 
+import App from "./App";
 import "./index.css";
-
-// Declare singletons
-
-const authService = new AuthService(appAxios);
-const authRepository = new AuthRepository(authService);
-
-const router = createRouter({
-  routeTree,
-  context: {
-    queryClient,
-    authRepository
-  }
-});
-
-// Register the router instance for type safety
-declare module "@tanstack/react-router" {
-  interface Register {
-    router: typeof router;
-  }
-}
 
 // Render the app
 const rootElement = document.getElementById("root")!;
@@ -35,7 +10,7 @@ if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <StrictMode>
-      <RouterProvider router={router} />
+      <App />
     </StrictMode>
   );
 }

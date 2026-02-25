@@ -1,11 +1,8 @@
-import App from "@/App";
 import type { RouterContext } from "@/lib/router-context";
-import { createRootRouteWithContext } from "@tanstack/react-router";
+import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 
 const RootLayout = () => {
-  const { queryClient } = Route.useRouteContext();
-
-  return <App queryClient={queryClient} />;
+  return <Outlet />;
 };
 
 export const Route = createRootRouteWithContext<RouterContext>()({

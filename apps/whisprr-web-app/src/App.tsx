@@ -1,15 +1,28 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Outlet } from "@tanstack/react-router";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { RouterProvider } from "@tanstack/react-router";
+import AuthRepository from "./data/repositories/auth";
+import AuthService from "./data/services/auth";
+import { appAxios } from "./lib/app-axios";
+import { queryClient } from "./lib/query-client";
+import { router } from "./router";
 
-export interface AppProps {
-  queryClient: QueryClient;
-}
+const InnerApp = () => {
+  // Declare singletons
+  const authService = new AuthService(appAxios);
+  const authRepository = new AuthRepository(authService);
 
-const App = ({ queryClient }: AppProps) => {
+  return (
+    <RouterProvider
+      router={router}
+      context={{ authRepository, queryClient }}
+    />
+  );
+};
+
+const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
-      {/* <ReactQueryDevtools initialIsOpen={false} /> */}
+      <InnerApp />
     </QueryClientProvider>
   );
 };
