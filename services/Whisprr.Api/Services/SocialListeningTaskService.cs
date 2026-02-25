@@ -5,16 +5,10 @@ using Whisprr.Api.Models.DTOs.SocialListeningTasks;
 
 namespace Whisprr.Api.Services;
 
-public class SocialListeningTaskService : ISocialListeningTaskService
+public class SocialListeningTaskService(AppDbContext dbContext, INotificationService notificationService) : ISocialListeningTaskService
 {
-    private readonly AppDbContext _dbContext;
-    private readonly INotificationService _notificationService;
-
-    public SocialListeningTaskService(AppDbContext dbContext, INotificationService notificationService)
-    {
-        _dbContext = dbContext;
-        _notificationService = notificationService;
-    }
+    private readonly AppDbContext _dbContext = dbContext;
+    private readonly INotificationService _notificationService = notificationService;
 
     public async Task<TaskResponse> CreateTaskAsync(Guid userId, CreateTaskRequest request, CancellationToken cancellationToken = default)
     {
@@ -53,7 +47,7 @@ public class SocialListeningTaskService : ISocialListeningTaskService
     public async Task<TaskListResponse> GetAllTasksAsync(TaskFilterRequest? filter = null, CancellationToken cancellationToken = default)
     {
         filter ??= new TaskFilterRequest();
-        
+
         var query = _dbContext.SocialListeningTasks
             .AsNoTracking()
             .Include(t => t.Topic)
@@ -62,10 +56,10 @@ public class SocialListeningTaskService : ISocialListeningTaskService
         // Apply filters
         if (filter.TopicId.HasValue)
             query = query.Where(t => t.TopicId == filter.TopicId.Value);
-        
+
         if (filter.Status.HasValue)
             query = query.Where(t => t.Status == filter.Status.Value);
-        
+
         if (!string.IsNullOrEmpty(filter.Platform))
             query = query.Where(t => t.Platform == filter.Platform);
 
@@ -73,7 +67,7 @@ public class SocialListeningTaskService : ISocialListeningTaskService
         query = query.OrderByDescending(t => t.CreatedAt);
 
         var totalCount = await query.CountAsync(cancellationToken);
-        
+
         var items = await query
             .Skip((filter.Page - 1) * filter.PageSize)
             .Take(filter.PageSize)
@@ -124,7 +118,7 @@ public class SocialListeningTaskService : ISocialListeningTaskService
     public async Task<bool> CancelTaskAsync(Guid taskId, CancellationToken cancellationToken = default)
     {
         var task = await _dbContext.SocialListeningTasks.FindAsync(new object[] { taskId }, cancellationToken);
-        
+
         if (task == null)
             return false;
 
@@ -133,7 +127,7 @@ public class SocialListeningTaskService : ISocialListeningTaskService
 
         task.Status = Models.Domain.TaskStatus.Cancelled;
         task.CompletedAt = DateTime.UtcNow;
-        
+
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         // Broadcast status change to subscribers
@@ -155,7 +149,7 @@ public class SocialListeningTaskService : ISocialListeningTaskService
         var task = await _dbContext.SocialListeningTasks
             .Include(t => t.Topic)
             .FirstOrDefaultAsync(t => t.Id == taskId, cancellationToken);
-        
+
         if (task == null)
             return null;
 
@@ -166,7 +160,7 @@ public class SocialListeningTaskService : ISocialListeningTaskService
         task.ErrorMessage = null;
         task.CompletedAt = null;
         task.StartedAt = null;
-        
+
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         // Broadcast status change to subscribers
@@ -179,7 +173,7 @@ public class SocialListeningTaskService : ISocialListeningTaskService
             Platform = task.Platform
         };
         await _notificationService.NotifyTaskStatusChangedAsync(task.TopicId, taskSummary, cancellationToken);
-        
+
         return MapToResponse(task, task.Topic.Name);
     }
 

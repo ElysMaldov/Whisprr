@@ -5,18 +5,12 @@ using Whisprr.Api.Models.DTOs.SocialListeningTasks;
 
 namespace Whisprr.Api.Services;
 
-public partial class NotificationService : INotificationService
+public partial class NotificationService(
+    IHubContext<SocialTopicHub, ISocialTopicClient> hubContext,
+    ILogger<NotificationService> logger) : INotificationService
 {
-    private readonly IHubContext<SocialTopicHub, ISocialTopicClient> _hubContext;
-    private readonly ILogger<NotificationService> _logger;
-
-    public NotificationService(
-        IHubContext<SocialTopicHub, ISocialTopicClient> hubContext,
-        ILogger<NotificationService> logger)
-    {
-        _hubContext = hubContext;
-        _logger = logger;
-    }
+    private readonly IHubContext<SocialTopicHub, ISocialTopicClient> _hubContext = hubContext;
+    private readonly ILogger<NotificationService> _logger = logger;
 
     public async Task NotifyNewInfoAsync(Guid topicId, SocialInfoResponse info, CancellationToken cancellationToken = default)
     {
