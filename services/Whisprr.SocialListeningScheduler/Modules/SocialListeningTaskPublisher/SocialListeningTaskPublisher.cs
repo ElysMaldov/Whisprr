@@ -128,9 +128,10 @@ internal partial class SocialListeningTaskPublisher(AppDbContext dbContext, IPub
         var command = new StartSocialListeningTask
         {
           TaskId = task.Id,
-          CorrelationId = Guid.NewGuid(),
           CreatedAt = task.CreatedAt,
-          Query = task.Query
+          Query = task.Query,
+          SocialTopicId = task.SocialTopicId,
+          SourcePlatformId = task.SourcePlatformId
         };
 
         await publishEndpoint.Publish(command);
