@@ -19,6 +19,11 @@ public interface ISocialTopicService
     Task<List<TopicSummaryResponse>> GetAllTopicsAsync(CancellationToken cancellationToken = default);
     
     /// <summary>
+    /// Get total count of topics.
+    /// </summary>
+    Task<int> GetTopicCountAsync(CancellationToken cancellationToken = default);
+    
+    /// <summary>
     /// Get topic by ID with full details.
     /// </summary>
     Task<TopicDetailResponse?> GetTopicByIdAsync(Guid topicId, CancellationToken cancellationToken = default);

@@ -13,6 +13,11 @@ public interface ISocialInfoService
     Task<SocialInfoListResponse> GetAllAsync(SocialInfoFilterRequest? filter = null, CancellationToken cancellationToken = default);
     
     /// <summary>
+    /// Get total count of social info entries.
+    /// </summary>
+    Task<int> GetInfoCountAsync(CancellationToken cancellationToken = default);
+    
+    /// <summary>
     /// Get social info by ID.
     /// </summary>
     Task<SocialInfoResponse?> GetByIdAsync(Guid infoId, CancellationToken cancellationToken = default);

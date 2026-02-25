@@ -8,14 +8,9 @@ using Whisprr.Api.Models.DTOs.Subscriptions;
 
 namespace Whisprr.Api.Services;
 
-public class SocialTopicService : ISocialTopicService
+public class SocialTopicService(AppDbContext dbContext) : ISocialTopicService
 {
-    private readonly AppDbContext _dbContext;
-
-    public SocialTopicService(AppDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
+    private readonly AppDbContext _dbContext = dbContext;
 
     public async Task<TopicResponse> CreateTopicAsync(Guid userId, CreateTopicRequest request, CancellationToken cancellationToken = default)
     {
@@ -53,6 +48,11 @@ public class SocialTopicService : ISocialTopicService
         return topics;
     }
 
+    public async Task<int> GetTopicCountAsync(CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.SocialTopics.CountAsync(cancellationToken);
+    }
+
     public async Task<TopicDetailResponse?> GetTopicByIdAsync(Guid topicId, CancellationToken cancellationToken = default)
     {
         var topic = await _dbContext.SocialTopics
@@ -70,16 +70,16 @@ public class SocialTopicService : ISocialTopicService
     public async Task<TopicResponse?> UpdateTopicAsync(Guid topicId, UpdateTopicRequest request, CancellationToken cancellationToken = default)
     {
         var topic = await _dbContext.SocialTopics.FindAsync(new object[] { topicId }, cancellationToken);
-        
+
         if (topic == null)
             return null;
 
         if (request.Name != null)
             topic.Name = request.Name;
-        
+
         if (request.Description != null)
             topic.Description = request.Description;
-        
+
         if (request.Keywords != null)
             topic.Keywords = request.Keywords;
 
@@ -90,7 +90,7 @@ public class SocialTopicService : ISocialTopicService
     public async Task<bool> DeleteTopicAsync(Guid topicId, CancellationToken cancellationToken = default)
     {
         var topic = await _dbContext.SocialTopics.FindAsync(new object[] { topicId }, cancellationToken);
-        
+
         if (topic == null)
             return false;
 
@@ -106,9 +106,9 @@ public class SocialTopicService : ISocialTopicService
         if (user == null)
         {
             // Create minimal user record if not exists
-            user = new User 
-            { 
-                Id = userId, 
+            user = new User
+            {
+                Id = userId,
                 Email = $"user-{userId}@placeholder.com" // Will be updated on first auth
             };
             _dbContext.Users.Add(user);

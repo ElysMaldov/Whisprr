@@ -4,19 +4,19 @@ using Whisprr.Api.Models.DTOs.SocialInfo;
 
 namespace Whisprr.Api.Services;
 
-public class SocialInfoService : ISocialInfoService
+public class SocialInfoService(AppDbContext dbContext) : ISocialInfoService
 {
-    private readonly AppDbContext _dbContext;
+    private readonly AppDbContext _dbContext = dbContext;
 
-    public SocialInfoService(AppDbContext dbContext)
+    public async Task<int> GetInfoCountAsync(CancellationToken cancellationToken = default)
     {
-        _dbContext = dbContext;
+        return await _dbContext.SocialInfos.CountAsync(cancellationToken);
     }
 
     public async Task<SocialInfoListResponse> GetAllAsync(SocialInfoFilterRequest? filter = null, CancellationToken cancellationToken = default)
     {
         filter ??= new SocialInfoFilterRequest();
-        
+
         var query = _dbContext.SocialInfos
             .AsNoTracking()
             .Include(i => i.Topic)
@@ -25,16 +25,16 @@ public class SocialInfoService : ISocialInfoService
         // Apply filters
         if (filter.TopicId.HasValue)
             query = query.Where(i => i.TopicId == filter.TopicId.Value);
-        
+
         if (filter.TaskId.HasValue)
             query = query.Where(i => i.TaskId == filter.TaskId.Value);
-        
+
         if (!string.IsNullOrEmpty(filter.Platform))
             query = query.Where(i => i.Platform == filter.Platform);
-        
+
         if (filter.FromDate.HasValue)
             query = query.Where(i => i.CollectedAt >= filter.FromDate.Value);
-        
+
         if (filter.ToDate.HasValue)
             query = query.Where(i => i.CollectedAt <= filter.ToDate.Value);
 
@@ -42,7 +42,7 @@ public class SocialInfoService : ISocialInfoService
         query = query.OrderByDescending(i => i.CollectedAt);
 
         var totalCount = await query.CountAsync(cancellationToken);
-        
+
         var items = await query
             .Skip((filter.Page - 1) * filter.PageSize)
             .Take(filter.PageSize)
@@ -80,7 +80,7 @@ public class SocialInfoService : ISocialInfoService
             .OrderByDescending(i => i.CollectedAt);
 
         var totalCount = await query.CountAsync(cancellationToken);
-        
+
         var items = await query
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
@@ -105,7 +105,7 @@ public class SocialInfoService : ISocialInfoService
             .OrderByDescending(i => i.CollectedAt);
 
         var totalCount = await query.CountAsync(cancellationToken);
-        
+
         var items = await query
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
