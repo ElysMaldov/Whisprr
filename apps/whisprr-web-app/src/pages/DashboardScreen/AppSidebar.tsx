@@ -11,6 +11,7 @@ import { Camera, Computer, Settings } from "lucide-react";
 import { NavMain } from "./NavMain";
 import { NavUser } from "./NavUser";
 import { useAuthStore } from "@/store/auth-store";
+import { NavTopics } from "./NavTopics";
 
 const data = {
   navMain: [
@@ -61,6 +62,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
+        <NavTopics
+          items={[
+            {
+              name: "Topic A",
+              url: "fefe"
+            }
+          ]}
+        />
       </SidebarContent>
       <SidebarFooter>
         {user && (
