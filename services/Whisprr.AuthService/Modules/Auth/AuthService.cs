@@ -134,9 +134,44 @@ public partial class AuthService(
         };
     }
 
+    public async Task<AuthResponse> RefreshTokenAsync(RefreshTokenRequest request, CancellationToken cancellationToken = default)
+    {
+        var user = await dbContext.Users
+            .FirstOrDefaultAsync(u => u.RefreshToken == request.RefreshToken && u.IsActive, cancellationToken);
+
+        if (user == null || user.RefreshTokenExpiry <= DateTime.UtcNow)
+        {
+            throw new UnauthorizedAccessException("Invalid or expired refresh token");
+        }
+
+        // Generate new tokens
+        var newToken = tokenService.GenerateJwtToken(user);
+        var newRefreshToken = tokenService.GenerateRefreshToken();
+
+        // Update refresh token
+        user.RefreshToken = newRefreshToken;
+        user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
+
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        LogTokenRefreshed(logger, user.Id, user.Email);
+
+        return new AuthResponse
+        {
+            UserId = user.Id,
+            Email = user.Email,
+            DisplayName = user.DisplayName,
+            Token = newToken,
+            RefreshToken = newRefreshToken
+        };
+    }
+
     [LoggerMessage(Level = LogLevel.Information, Message = "User registered: {UserId} ({Email})")]
     static partial void LogUserRegistered(ILogger<AuthService> logger, Guid userId, string email);
 
     [LoggerMessage(Level = LogLevel.Information, Message = "User logged in: {UserId} ({Email})")]
     static partial void LogUserLoggedIn(ILogger<AuthService> logger, Guid userId, string email);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Token refreshed for user: {UserId} ({Email})")]
+    static partial void LogTokenRefreshed(ILogger<AuthService> logger, Guid userId, string email);
 }

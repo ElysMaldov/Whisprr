@@ -98,4 +98,30 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
         }
         return Ok(user);
     }
+
+    /// <summary>
+    /// Refreshes an access token using a valid refresh token.
+    /// </summary>
+    [HttpPost("refresh")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<AuthResponse>> RefreshToken(RefreshTokenRequest request, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var response = await authService.RefreshTokenAsync(request, cancellationToken);
+            return Ok(response);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            logger.LogWarning(ex, "Token refresh failed");
+            return Unauthorized(new ProblemDetails
+            {
+                Title = "Token Refresh Failed",
+                Detail = ex.Message,
+                Status = StatusCodes.Status401Unauthorized
+            });
+        }
+    }
 }

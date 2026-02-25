@@ -72,6 +72,14 @@ public partial class AuthProxy(IHttpClientFactory factory, ILogger<AuthProxy> lo
             ?? throw new InvalidOperationException("Invalid response from auth service");
     }
 
+    public async Task<AuthResponse> RefreshTokenAsync(RefreshTokenRequest request, CancellationToken cancellationToken = default)
+    {
+        var response = await _httpClient.PostAsJsonAsync("/api/auth/refresh", request, cancellationToken);
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<AuthResponse>(cancellationToken)
+            ?? throw new InvalidOperationException("Invalid response from auth service");
+    }
+
     [LoggerMessage(
         Level = LogLevel.Error,
         Message = "Token validation failed: {ErrorMessage}")]

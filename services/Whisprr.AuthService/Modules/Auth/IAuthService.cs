@@ -26,4 +26,9 @@ public interface IAuthService
     /// Gets user information by ID.
     /// </summary>
     Task<UserResponse?> GetUserAsync(Guid userId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Refreshes an access token using a valid refresh token.
+    /// </summary>
+    Task<AuthResponse> RefreshTokenAsync(RefreshTokenRequest request, CancellationToken cancellationToken = default);
 }

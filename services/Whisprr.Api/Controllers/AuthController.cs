@@ -63,4 +63,30 @@ public class AuthController(IAuthProxy authProxy, ILogger<AuthController> logger
             });
         }
     }
+
+    /// <summary>
+    /// Refreshes an access token using a valid refresh token.
+    /// </summary>
+    [HttpPost("refresh")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<AuthResponse>> RefreshToken(RefreshTokenRequest request, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var response = await authProxy.RefreshTokenAsync(request, cancellationToken);
+            return Ok(response);
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+        {
+            logger.LogWarning("Token refresh failed");
+            return Unauthorized(new ProblemDetails
+            {
+                Title = "Token Refresh Failed",
+                Detail = "Invalid or expired refresh token",
+                Status = StatusCodes.Status401Unauthorized
+            });
+        }
+    }
 }

@@ -26,4 +26,9 @@ public interface IAuthProxy
     /// Register a new user via the Auth Service.
     /// </summary>
     Task<AuthResponse> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Refresh access token via the Auth Service.
+    /// </summary>
+    Task<AuthResponse> RefreshTokenAsync(RefreshTokenRequest request, CancellationToken cancellationToken = default);
 }
