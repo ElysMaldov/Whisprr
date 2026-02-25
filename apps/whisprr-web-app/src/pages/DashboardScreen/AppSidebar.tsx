@@ -10,13 +10,9 @@ import {
 import { Camera, Computer, Settings } from "lucide-react";
 import { NavMain } from "./NavMain";
 import { NavUser } from "./NavUser";
+import { useAuthStore } from "@/store/auth-store";
 
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg"
-  },
   navMain: [
     {
       title: "Dashboard",
@@ -52,6 +48,8 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { user } = useAuthStore();
+
   return (
     <Sidebar
       collapsible="offcanvas"
@@ -65,7 +63,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        {user && (
+          <NavUser
+            user={{
+              avatar: "",
+              email: user?.email,
+              name: user?.displayName || ""
+            }}
+          />
+        )}
       </SidebarFooter>
     </Sidebar>
   );

@@ -16,7 +16,10 @@ import {
   SidebarMenuItem,
   useSidebar
 } from "@/components/ui/sidebar";
+import { useLogout } from "@/hooks/useLogout";
+import { useNavigate } from "@tanstack/react-router";
 import { LogOut, MoreVertical } from "lucide-react";
+import { useCallback } from "react";
 
 export function NavUser({
   user
@@ -28,6 +31,15 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
+  const { mutate: logOut } = useLogout();
+  const navigate = useNavigate();
+
+  const handleLogout = useCallback(() => {
+    logOut();
+    navigate({
+      to: "/login"
+    });
+  }, [logOut, navigate]);
 
   return (
     <SidebarMenu>
@@ -80,7 +92,7 @@ export function NavUser({
               </DropdownMenuLabel>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>
               <LogOut />
               Log out
             </DropdownMenuItem>
