@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Whisprr.Contracts.Enums;
@@ -12,16 +13,18 @@ using Whisprr.SocialListeningScheduler.Data;
 namespace Whisprr.SocialListeningScheduler.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260225043516_AddPlatformToSocialTopic")]
+    partial class AddPlatformToSocialTopic
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "9.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "platform_type", new[] { "bluesky", "mastodon" });
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "platform_type", new[] { "bluesky", "mastodon", "twitter", "reddit" });
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "task_progress_status", new[] { "pending", "processing", "queued", "success", "failed" });
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
