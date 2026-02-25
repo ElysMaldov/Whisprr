@@ -6,6 +6,7 @@ namespace Whisprr.SocialScouter.Models;
 internal record SocialListeningTask : ITrackableModel
 {
     public required Guid Id { get; set; }
+    public required Guid CorrelationId { get; set; }
     public required DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset? UpdatedAt { get; set; }
 

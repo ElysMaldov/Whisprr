@@ -1,5 +1,7 @@
 using System.Threading.Channels;
+using MassTransit;
 using Whisprr.Contracts.Enums;
+using Whisprr.Contracts.Events;
 using Whisprr.SocialScouter.Models;
 using Whisprr.SocialScouter.Modules.SocialListener;
 
@@ -14,7 +16,8 @@ internal partial class SocialListenerWorker(
     ILogger<SocialListenerWorker> logger,
     IServiceScopeFactory scopeFactory,
     ChannelReader<SocialListeningTask> taskChannelReader,
-    ChannelWriter<SocialInfo> socialInfoChannelWriter) : BackgroundService
+    ChannelWriter<SocialInfo> socialInfoChannelWriter,
+    IBus bus) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -58,10 +61,32 @@ internal partial class SocialListenerWorker(
             await ExecuteListenerAsync(listener, task, stoppingToken);
 
             LogTaskCompleted(logger, task.Id, task.Platform);
+
+            // Publish SocialListeningTaskFinished event (Option A)
+            await bus.Publish(new SocialListeningTaskFinished
+            {
+                TaskId = task.Id,
+                CorrelationId = task.CorrelationId,
+                FinishedAt = DateTimeOffset.UtcNow,
+                Query = task.Query
+            }, stoppingToken);
+
+            LogTaskFinishedEventPublished(logger, task.Id);
         }
         catch (Exception ex)
         {
             LogTaskFailed(logger, ex, task.Id);
+
+            // Publish SocialListeningTaskFailed event
+            await bus.Publish(new SocialListeningTaskFailed
+            {
+                TaskId = task.Id,
+                CorrelationId = task.CorrelationId,
+                FailedAt = DateTimeOffset.UtcNow,
+                Query = task.Query
+            }, stoppingToken);
+
+            LogTaskFailedEventPublished(logger, task.Id);
         }
     }
 
@@ -133,4 +158,14 @@ internal partial class SocialListenerWorker(
         Level = LogLevel.Error,
         Message = "Failed to process task {TaskId}")]
     static partial void LogTaskFailed(ILogger<SocialListenerWorker> logger, Exception ex, Guid taskId);
+
+    [LoggerMessage(
+        Level = LogLevel.Debug,
+        Message = "Published SocialListeningTaskFinished event for task {TaskId}")]
+    static partial void LogTaskFinishedEventPublished(ILogger<SocialListenerWorker> logger, Guid taskId);
+
+    [LoggerMessage(
+        Level = LogLevel.Debug,
+        Message = "Published SocialListeningTaskFailed event for task {TaskId}")]
+    static partial void LogTaskFailedEventPublished(ILogger<SocialListenerWorker> logger, Guid taskId);
 }
