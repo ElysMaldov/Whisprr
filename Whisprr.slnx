@@ -1,5 +1,15 @@
 <Solution>
   <Folder Name="/lib/">
     <Project Path="lib/Whisprr.BlueskyService/Whisprr.BlueskyService.csproj" />
+    <Project Path="lib/Whisprr.Caching/Whisprr.Caching.csproj" />
+    <Project Path="lib/Whisprr.Contracts/Whisprr.Contracts.csproj" />
+    <Project Path="lib/Whisprr.MastodonService/Whisprr.MastodonService.csproj" />
+    <Project Path="lib/Whisprr.MessageBroker/Whisprr.MessageBroker.csproj" />
+    <Project Path="lib/Whisprr.Utils/Whisprr.Utils.csproj" />
+  </Folder>
+  <Folder Name="/services/">
+    <Project Path="services/Whisprr.Api/Whisprr.Api.csproj" />
+    <Project Path="services/Whisprr.SocialListeningScheduler/Whisprr.SocialListeningScheduler.csproj" />
+    <Project Path="services/Whisprr.SocialScouter/Whisprr.SocialScouter.csproj" />
   </Folder>
 </Solution>

@@ -1,0 +1,77 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Whisprr.Api",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/services/Whisprr.Api/bin/Debug/net10.0/Whisprr.Api.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/services/Whisprr.Api",
+      "stopAtEntry": false,
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(http://\\S+)", // Switched pattern to http only.
+        "uriFormat": "%s/swagger"
+      },
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        // We're staying on port 5000 for the main API. Clean and classic.
+        "ASPNETCORE_URLS": "http://localhost:5000"
+      }
+    },
+    {
+      "name": "Whisprr.SocialListeningScheduler",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/services/Whisprr.SocialListeningScheduler/bin/Debug/net10.0/Whisprr.SocialListeningScheduler.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/services/Whisprr.SocialListeningScheduler",
+      "stopAtEntry": false,
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(http://\\S+)",
+        // Since you mentioned Hangfire, let's make sure it lands there!
+        "uriFormat": "%s/hangfire"
+      },
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        // Port 5001 matches your http profile in launchSettings. Perfect harmony.
+        "ASPNETCORE_URLS": "http://localhost:5001"
+      }
+    },
+    {
+      "name": "Whisprr.SocialScouter",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/services/Whisprr.SocialScouter/bin/Debug/net10.0/Whisprr.SocialScouter.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/services/Whisprr.SocialScouter",
+      "stopAtEntry": false,
+      "env": {
+        // This is a worker service, so we use DOTNET_ENVIRONMENT to trigger the correct configuration logic.
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    {
+      "name": ".NET Core Attach",
+      "type": "coreclr",
+      "request": "attach"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "All Services",
+      "configurations": [
+        "Whisprr.Api",
+        "Whisprr.SocialListeningScheduler",
+        "Whisprr.SocialScouter"
+      ],
+      // Setting this to true ensures that if one service dies, they all stop, keeping your dev environment clean.
+      "stopAll": true
+    }
+  ]
+}
