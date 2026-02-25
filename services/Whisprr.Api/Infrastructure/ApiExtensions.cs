@@ -13,6 +13,18 @@ public static class ApiExtensions
            options.Conventions.Add(new RouteTokenTransformerConvention(new KebabCaseParameterTransformer()));
        });
 
+        // Add CORS for web app
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("WebApp", policy =>
+            {
+                policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
+                      .AllowAnyHeader()
+                      .AllowAnyMethod()
+                      .AllowCredentials();
+            });
+        });
+
         // Add SignalR for real-time updates
         builder.Services.AddSignalR();
 
@@ -27,6 +39,7 @@ public static class ApiExtensions
 
     public static WebApplication UseApiServices(this WebApplication app)
     {
+        app.UseCors("WebApp");
         app.UseHttpsRedirection();
         app.MapControllers();
 
