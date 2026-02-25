@@ -10,14 +10,24 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as UnauthOnlyRouteImport } from './routes/_unauth-only'
+import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as unauthOnlyRegisterRouteImport } from './routes/(unauth-only)/register'
-import { Route as unauthOnlyLoginRouteImport } from './routes/(unauth-only)/login'
-import { Route as protectedDashboardIndexRouteImport } from './routes/(protected)/dashboard/index'
+import { Route as UnauthOnlyRegisterRouteImport } from './routes/_unauth-only.register'
+import { Route as UnauthOnlyLoginRouteImport } from './routes/_unauth-only.login'
+import { Route as AuthDashboardRouteImport } from './routes/_auth.dashboard'
 
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UnauthOnlyRoute = UnauthOnlyRouteImport.update({
+  id: '/_unauth-only',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/_auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -25,64 +35,67 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const unauthOnlyRegisterRoute = unauthOnlyRegisterRouteImport.update({
-  id: '/(unauth-only)/register',
+const UnauthOnlyRegisterRoute = UnauthOnlyRegisterRouteImport.update({
+  id: '/register',
   path: '/register',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => UnauthOnlyRoute,
 } as any)
-const unauthOnlyLoginRoute = unauthOnlyLoginRouteImport.update({
-  id: '/(unauth-only)/login',
+const UnauthOnlyLoginRoute = UnauthOnlyLoginRouteImport.update({
+  id: '/login',
   path: '/login',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => UnauthOnlyRoute,
 } as any)
-const protectedDashboardIndexRoute = protectedDashboardIndexRouteImport.update({
-  id: '/(protected)/dashboard/',
-  path: '/dashboard/',
-  getParentRoute: () => rootRouteImport,
+const AuthDashboardRoute = AuthDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/login': typeof unauthOnlyLoginRoute
-  '/register': typeof unauthOnlyRegisterRoute
-  '/dashboard/': typeof protectedDashboardIndexRoute
+  '/dashboard': typeof AuthDashboardRoute
+  '/login': typeof UnauthOnlyLoginRoute
+  '/register': typeof UnauthOnlyRegisterRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/login': typeof unauthOnlyLoginRoute
-  '/register': typeof unauthOnlyRegisterRoute
-  '/dashboard': typeof protectedDashboardIndexRoute
+  '/dashboard': typeof AuthDashboardRoute
+  '/login': typeof UnauthOnlyLoginRoute
+  '/register': typeof UnauthOnlyRegisterRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_auth': typeof AuthRouteWithChildren
+  '/_unauth-only': typeof UnauthOnlyRouteWithChildren
   '/about': typeof AboutRoute
-  '/(unauth-only)/login': typeof unauthOnlyLoginRoute
-  '/(unauth-only)/register': typeof unauthOnlyRegisterRoute
-  '/(protected)/dashboard/': typeof protectedDashboardIndexRoute
+  '/_auth/dashboard': typeof AuthDashboardRoute
+  '/_unauth-only/login': typeof UnauthOnlyLoginRoute
+  '/_unauth-only/register': typeof UnauthOnlyRegisterRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/login' | '/register' | '/dashboard/'
+  fullPaths: '/' | '/about' | '/dashboard' | '/login' | '/register'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/login' | '/register' | '/dashboard'
+  to: '/' | '/about' | '/dashboard' | '/login' | '/register'
   id:
     | '__root__'
     | '/'
+    | '/_auth'
+    | '/_unauth-only'
     | '/about'
-    | '/(unauth-only)/login'
-    | '/(unauth-only)/register'
-    | '/(protected)/dashboard/'
+    | '/_auth/dashboard'
+    | '/_unauth-only/login'
+    | '/_unauth-only/register'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRouteWithChildren
+  UnauthOnlyRoute: typeof UnauthOnlyRouteWithChildren
   AboutRoute: typeof AboutRoute
-  unauthOnlyLoginRoute: typeof unauthOnlyLoginRoute
-  unauthOnlyRegisterRoute: typeof unauthOnlyRegisterRoute
-  protectedDashboardIndexRoute: typeof protectedDashboardIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -94,6 +107,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_unauth-only': {
+      id: '/_unauth-only'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof UnauthOnlyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_auth': {
+      id: '/_auth'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -101,36 +128,59 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(unauth-only)/register': {
-      id: '/(unauth-only)/register'
+    '/_unauth-only/register': {
+      id: '/_unauth-only/register'
       path: '/register'
       fullPath: '/register'
-      preLoaderRoute: typeof unauthOnlyRegisterRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof UnauthOnlyRegisterRouteImport
+      parentRoute: typeof UnauthOnlyRoute
     }
-    '/(unauth-only)/login': {
-      id: '/(unauth-only)/login'
+    '/_unauth-only/login': {
+      id: '/_unauth-only/login'
       path: '/login'
       fullPath: '/login'
-      preLoaderRoute: typeof unauthOnlyLoginRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof UnauthOnlyLoginRouteImport
+      parentRoute: typeof UnauthOnlyRoute
     }
-    '/(protected)/dashboard/': {
-      id: '/(protected)/dashboard/'
+    '/_auth/dashboard': {
+      id: '/_auth/dashboard'
       path: '/dashboard'
-      fullPath: '/dashboard/'
-      preLoaderRoute: typeof protectedDashboardIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthDashboardRouteImport
+      parentRoute: typeof AuthRoute
     }
   }
 }
 
+interface AuthRouteChildren {
+  AuthDashboardRoute: typeof AuthDashboardRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthDashboardRoute: AuthDashboardRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+
+interface UnauthOnlyRouteChildren {
+  UnauthOnlyLoginRoute: typeof UnauthOnlyLoginRoute
+  UnauthOnlyRegisterRoute: typeof UnauthOnlyRegisterRoute
+}
+
+const UnauthOnlyRouteChildren: UnauthOnlyRouteChildren = {
+  UnauthOnlyLoginRoute: UnauthOnlyLoginRoute,
+  UnauthOnlyRegisterRoute: UnauthOnlyRegisterRoute,
+}
+
+const UnauthOnlyRouteWithChildren = UnauthOnlyRoute._addFileChildren(
+  UnauthOnlyRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRouteWithChildren,
+  UnauthOnlyRoute: UnauthOnlyRouteWithChildren,
   AboutRoute: AboutRoute,
-  unauthOnlyLoginRoute: unauthOnlyLoginRoute,
-  unauthOnlyRegisterRoute: unauthOnlyRegisterRoute,
-  protectedDashboardIndexRoute: protectedDashboardIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,8 +1,6 @@
-import LoginScreen from "@/pages/LoginScreen";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/(unauth-only)/login")({
-  component: RouteComponent,
+export const Route = createFileRoute("/_unauth-only")({
   beforeLoad: ({ context, location }) => {
     if (context.auth.isAuthenticated) {
       throw redirect({
@@ -14,9 +12,3 @@ export const Route = createFileRoute("/(unauth-only)/login")({
     }
   }
 });
-
-function RouteComponent() {
-  const { authRepository } = Route.useRouteContext();
-
-  return <LoginScreen authRepository={authRepository} />;
-}
