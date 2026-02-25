@@ -19,12 +19,4 @@ public static class DatabaseExtensions
 
         return builder;
     }
-
-    public static async Task InitializeDatabaseAsync(this IHost host)
-    {
-        using var scope = host.Services.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        
-        await dbContext.Database.MigrateAsync();
-    }
 }

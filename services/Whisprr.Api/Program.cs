@@ -15,6 +15,4 @@ app
     .UseAuthenticationServices()
     .UseApiServices();
 
-await app.InitializeDatabaseAsync();
-
 app.Run();
