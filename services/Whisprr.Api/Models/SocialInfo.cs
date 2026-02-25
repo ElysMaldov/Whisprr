@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Whisprr.Contracts.Enums;
-
 
 namespace Whisprr.Api.Models;
 
@@ -10,9 +10,7 @@ namespace Whisprr.Api.Models;
 public class SocialInfo
 {
   public Guid Id { get; set; }
-  [MaxLength(100)]
   public string? Title { get; set; }
-  [MaxLength(1_000)]
   public required string Content { get; set; }
   public DateTimeOffset CreatedAt { get; set; }
   public Sentiment Sentiment { get; set; }

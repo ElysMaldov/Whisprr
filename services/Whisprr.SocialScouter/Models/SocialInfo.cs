@@ -9,9 +9,7 @@ namespace Whisprr.SocialScouter.Models;
 internal record SocialInfo
 {
   public Guid Id { get; set; }
-  [MaxLength(100)]
   public string? Title { get; set; }
-  [MaxLength(1_000)]
   public required string Content { get; set; }
   public DateTimeOffset CreatedAt { get; set; }
   public Sentiment Sentiment { get; set; }
