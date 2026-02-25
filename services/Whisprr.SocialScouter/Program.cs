@@ -1,4 +1,5 @@
 using Whisprr.BlueskyService;
+using Whisprr.MastodonService;
 using Whisprr.MessageBroker.Modules.Infrastructure;
 using Whisprr.SocialScouter.Modules.Caching;
 using Whisprr.SocialScouter.Modules.MessageBroker.Consumers;
@@ -9,6 +10,7 @@ var builder = Host.CreateApplicationBuilder(args);
 builder
     .AddCaching()
     .AddBlueskyServices()
+    .AddMastodonServices()
     .AddMessageBroker(consumersCfg =>
     {
         // Add consumer with its definition (PrefetchCount = 750 will be applied)

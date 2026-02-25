@@ -1,6 +1,7 @@
 using System.Threading.Channels;
 using Whisprr.SocialScouter.Models;
 using Whisprr.SocialScouter.Modules.SocialListener.Bluesky;
+using Whisprr.SocialScouter.Modules.SocialListener.Mastodon;
 using Whisprr.SocialScouter.Modules.Workers;
 
 
@@ -46,6 +47,7 @@ public static class SocialListenerExtensions
 
         // Register listeners
         builder.Services.AddScoped<ISocialListener, BlueskySocialListener>();
+        builder.Services.AddScoped<ISocialListener, MastodonSocialListener>();
 
         return builder;
     }
