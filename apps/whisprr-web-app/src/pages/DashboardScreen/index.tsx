@@ -1,9 +1,10 @@
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { SectionCards } from "@/pages/DashboardScreen/SectionCards";
-import { SiteHeader } from "@/pages/DashboardScreen/SiteHeader";
-import { AppSidebar } from "./AppSidebar";
 import { useSocialTopicHub } from "@/hooks/useSocialTopicHub";
+import { SiteHeader } from "@/pages/DashboardScreen/SiteHeader";
 import { useEffect } from "react";
+import { AppSidebar } from "./AppSidebar";
+import TopicCards from "./TopicCards";
+import { PlatformType } from "@/models/domain/platform-type";
 
 const DashboardScreen = () => {
   // Setup WebSocket connection to Whisprr.Api
@@ -38,12 +39,17 @@ const DashboardScreen = () => {
         <SiteHeader />
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-              <SectionCards />
-              {/* <div className="px-4 lg:px-6">
-                <ChartAreaInteractive />
-              </div>
-              <DataTable data={data} /> */}
+            <div className="flex flex-col gap-4 p-4">
+              <TopicCards
+                topics={[
+                  {
+                    id: "fe",
+                    keywords: ["Meow"],
+                    language: "en",
+                    platform: PlatformType.Bluesky
+                  }
+                ]}
+              />
             </div>
           </div>
         </div>
