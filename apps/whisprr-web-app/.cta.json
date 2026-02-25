@@ -13,6 +13,7 @@
   "version": 1,
   "framework": "react-cra",
   "chosenAddOns": [
+    "shadcn",
     "nitro"
   ]
 }
