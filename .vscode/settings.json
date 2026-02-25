@@ -9,5 +9,14 @@
     "statusBarItem.remoteForeground": "#15202b"
   },
   "peacock.color": "#ea6962",
-  "dotnet.defaultSolution": "Whisprr.slnx"
+  "dotnet.defaultSolution": "Whisprr.slnx",
+  "files.readonlyInclude": {
+    "**/routeTree.gen.ts": true
+  },
+  "files.watcherExclude": {
+    "**/routeTree.gen.ts": true
+  },
+  "search.exclude": {
+    "**/routeTree.gen.ts": true
+  }
 }
