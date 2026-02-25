@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using Whisprr.Contracts.Enums;
 
 
@@ -20,14 +19,12 @@ public class SocialInfo
   [Url]
   public required string OriginalUrl { get; set; }
   public required string OriginalId { get; set; }
+  public required Guid SourcePlatformId { get; set; }
+
   /// <summary>
-  /// PK for <see cref="SourcePlatform"/>
+  /// The platform type this social info came from (e.g., Bluesky, Mastodon).
   /// </summary>
-  public Guid SourcePlatformId { get; set; }
-  /// <summary>
-  /// Reference navigation to populate the data when fetched
-  /// </summary>
-  public DataSource DataSource { get; set; } = null!;
+  public required PlatformType Platform { get; set; }
 
   public Guid GeneratedFromTaskId { get; set; }
 

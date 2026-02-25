@@ -14,8 +14,12 @@ public class SocialListeningTask : ITrackableModel
   public Guid SocialTopicId { get; set; }
   public SocialTopic SocialTopic { get; set; } = null!; // Use dammit to avoid this field being nullable by compiler, but will be populated by EF Core. Kind of like late in dart.
 
-  public Guid SourcePlatformId { get; set; }
-  public DataSource DataSource { get; set; } = null!;
+  public required Guid SourcePlatformId { get; set; }
+
+  /// <summary>
+  /// The platform type for this listening task (e.g., Bluesky, Mastodon).
+  /// </summary>
+  public required PlatformType Platform { get; set; }
   public ICollection<SocialInfo> GeneratedSocialInfos { get; set; } = []; // Since the name doesn't match convention, we setup the relationship using FLuent API in the context
 
   public string Query

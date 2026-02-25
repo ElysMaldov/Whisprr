@@ -6,7 +6,7 @@ namespace Whisprr.SocialScouter.Models;
 /// <summary>
 /// Describes a social information from a post, timeline, feed, etc.
 /// </summary>
-internal class SocialInfo
+internal record SocialInfo
 {
   public Guid Id { get; set; }
   [MaxLength(100)]
@@ -18,9 +18,12 @@ internal class SocialInfo
   [Url]
   public required string OriginalUrl { get; set; }
   public required string OriginalId { get; set; }
+  public required Guid SourcePlatformId { get; set; }
+
   /// <summary>
-  /// PK for <see cref="SourcePlatform"/>
+  /// The platform type this social info came from (e.g., Bluesky, Mastodon).
   /// </summary>
-  public Guid SourcePlatformId { get; set; }
+  public required PlatformType Platform { get; set; }
+
   public Guid GeneratedFromTaskId { get; set; }
 }
