@@ -17,7 +17,7 @@ public static class AuthExtensions
         // Register Token and Auth services
         builder.Services.AddScoped<ITokenService, TokenService>();
         builder.Services.AddScoped<IAuthService, Modules.Auth.AuthService>();
-        builder.Services.AddSingleton<IUserEventPublisher, UserEventPublisher>();
+        builder.Services.AddScoped<IUserEventPublisher, UserEventPublisher>();
 
         return builder;
     }

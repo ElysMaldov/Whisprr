@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\lib\Whisprr.Contracts\Whisprr.Contracts.csproj" />
+    <ProjectReference Include="..\..\lib\Whisprr.MessageBroker\Whisprr.MessageBroker.csproj" />
   </ItemGroup>
 
 </Project>
