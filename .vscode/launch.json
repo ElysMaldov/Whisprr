@@ -101,19 +101,13 @@
   ],
   "compounds": [
     {
-      "name": "All Services",
+      "name": "Api + Web App",
       "console": "integratedTerminal",
       "configurations": [
+        "Whisprr.AuthService",
         "Whisprr.Api",
-        "Whisprr.SocialListeningScheduler",
-        "Whisprr.SocialScouter"
+        "whisprr-web-app"
       ],
-      "stopAll": true
-    },
-    {
-      "name": "Auth + Web App",
-      "console": "integratedTerminal",
-      "configurations": ["Whisprr.AuthService", "whisprr-web-app"],
       "stopAll": true
     },
     {
