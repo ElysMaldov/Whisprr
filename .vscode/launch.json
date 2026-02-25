@@ -3,6 +3,7 @@
   "configurations": [
     {
       "name": "Whisprr.Api",
+      "console": "integratedTerminal",
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
@@ -23,6 +24,7 @@
     },
     {
       "name": "Whisprr.SocialListeningScheduler",
+      "console": "integratedTerminal",
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
@@ -44,6 +46,7 @@
     },
     {
       "name": "Whisprr.SocialScouter",
+      "console": "integratedTerminal",
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
@@ -65,6 +68,7 @@
   "compounds": [
     {
       "name": "All Services",
+      "console": "integratedTerminal",
       "configurations": [
         "Whisprr.Api",
         "Whisprr.SocialListeningScheduler",

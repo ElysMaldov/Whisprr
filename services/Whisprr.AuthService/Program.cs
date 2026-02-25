@@ -1,19 +1,19 @@
-using Whisprr.Api.Infrastructure;
+using Whisprr.AuthService.Infrastructure;
+using Whisprr.MessageBroker.Modules.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder
-    .AddAppDbContext()
-    .AddAuthenticationServices()
-    .AddApiServices()
+    .AddAuthDbContext()
+    .AddMessageBroker()
+    .AddAuthServices()
     .AddApiDocumentation();
 
 var app = builder.Build();
 
 app
     .UseApiDocumentation()
-    .UseAuthenticationServices()
-    .UseApiServices();
+    .UseAuthServices();
 
 await app.InitializeDatabaseAsync();
 

@@ -34,6 +34,26 @@ services:
       - 5672:5672 # AMQP port
       - 15672:15672 # Management UI
 
+  auth-service:
+    container_name: Whisprr.AuthService
+    build:
+      context: .
+      dockerfile: services/Whisprr.AuthService/Dockerfile
+    ports:
+      - "5001:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=whisprr_auth;Username=postgres;Password=postgres
+      - Jwt__Key=dev-secret-key-minimum-32-characters-long-for-testing
+      - Jwt__Issuer=whisprr-auth
+      - Jwt__Audience=whisprr-api
+      - MessageBroker__Host=rabbitmq://rabbitmq:5672
+      - MessageBroker__Username=whisprr
+      - MessageBroker__Password=whisprr
+    depends_on:
+      - postgres
+      - rabbitmq
+
 volumes:
   pgdata:
   redisdata:
