@@ -133,6 +133,7 @@ internal partial class SocialListeningTaskPublisher(
         var command = new StartSocialListeningTask
         {
           TaskId = task.Id,
+          CorrelationId = task.Id,
           CreatedAt = task.CreatedAt,
           Query = task.Query,
           SocialTopicId = task.SocialTopicId,

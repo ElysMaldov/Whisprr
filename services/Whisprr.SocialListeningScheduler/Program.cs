@@ -2,6 +2,7 @@ using MassTransit;
 using Whisprr.MessageBroker.Modules.Infrastructure;
 using Whisprr.SocialListeningScheduler.Data;
 using Whisprr.SocialListeningScheduler.Modules.Hangfire;
+using Whisprr.SocialListeningScheduler.Modules.MessageBroker.Consumers;
 using Whisprr.SocialListeningScheduler.Modules.SocialListeningTaskPublisher;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +10,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder
     .AddMessageBroker(busCfg =>
     {
+      // Register consumers for SocialScouter events
+      busCfg.AddConsumer<SocialListeningTaskQueuedConsumer>();
+      busCfg.AddConsumer<SocialListeningTaskFinishedConsumer>();
+      busCfg.AddConsumer<SocialListeningTaskFailedConsumer>();
+
       // Add Entity Framework Core Transactional Outbox
       // This ensures database updates and message dispatches are atomic
       busCfg.AddEntityFrameworkOutbox<AppDbContext>(o =>
