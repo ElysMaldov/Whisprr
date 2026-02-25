@@ -18,6 +18,7 @@ public static class DbContextExtensions
 
         // Map enums to PostgreSQL native enum types
         npgsqlOptions.MapEnum<TaskProgressStatus>();
+        npgsqlOptions.MapEnum<PlatformType>();
       });
     });
 

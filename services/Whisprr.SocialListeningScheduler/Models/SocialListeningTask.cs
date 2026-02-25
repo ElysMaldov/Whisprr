@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations.Schema;
 using Whisprr.Contracts.Enums;
 using Whisprr.Utils.Interfaces;
 
@@ -13,18 +12,15 @@ internal class SocialListeningTask : ITrackableModel
   public TaskProgressStatus Status { get; set; }
 
   public Guid SocialTopicId { get; set; }
-  
-  [ForeignKey(nameof(SocialTopicId))]
-  public SocialTopic SocialTopic { get; set; } = null!; // Use dammit to avoid this field being nullable by compiler, but will be populated by EF Core. Kind of like late in dart.
+  public SocialTopic SocialTopic { get; set; } = null!;
 
-  public Guid SourcePlatformId { get; set; }
-  
-  [ForeignKey(nameof(SourcePlatformId))]
-  public DataSource DataSource { get; set; } = null!;
-  
-  [NotMapped]
-  public string Query
-  {
-    get => string.Join(" ", SocialTopic.Keywords);
-  }
+  /// <summary>
+  /// The platform type for this listening task (e.g., Bluesky, Mastodon).
+  /// </summary>
+  public PlatformType Platform { get; set; }
+
+  /// <summary>
+  /// Computed query from the SocialTopic keywords.
+  /// </summary>
+  public string Query => string.Join(" ", SocialTopic.Keywords);
 }

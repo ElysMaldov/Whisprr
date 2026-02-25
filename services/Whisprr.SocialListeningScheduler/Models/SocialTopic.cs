@@ -1,4 +1,5 @@
 using System.Globalization;
+using Whisprr.Contracts.Enums;
 
 namespace Whisprr.SocialListeningScheduler.Models;
 
@@ -26,6 +27,11 @@ internal class SocialTopic
   /// Stored as a BCP-47 string in the DB, but used as CultureInfo in code.
   /// </summary>
   public required CultureInfo Language { get; set; }
+
+  /// <summary>
+  /// The social media platform this topic is associated with.
+  /// </summary>
+  public required PlatformType Platform { get; set; }
 
   public ICollection<SocialListeningTask> SocialListeningTasks { get; set; } = [];
 }

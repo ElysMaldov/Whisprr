@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Whisprr.Contracts.Commands;
@@ -9,17 +10,26 @@ namespace Whisprr.SocialListeningScheduler.Modules.SocialListeningTaskPublisher;
 
 /// <summary>
 /// Handles the arrangement and publishing of social listening tasks using the Transactional Outbox pattern.
+/// Creates tasks by combining PlatformType values with SocialTopics.
 /// </summary>
-/// <param name="dbContext">The database context for accessing DataSources, SocialTopics, and SocialListeningTasks.</param>
-/// <param name="publishEndpoint">The MassTransit publish endpoint for publishing events within the outbox transaction.</param>
-/// <param name="logger">The logger for logging operations.</param>
-internal partial class SocialListeningTaskPublisher(AppDbContext dbContext, IPublishEndpoint publishEndpoint, ILogger<SocialListeningTaskPublisher> logger) : ISocialListeningTaskPublisher
+internal partial class SocialListeningTaskPublisher(
+    AppDbContext dbContext,
+    IPublishEndpoint publishEndpoint,
+    ILogger<SocialListeningTaskPublisher> logger) : ISocialListeningTaskPublisher
 {
   /// <summary>
-  /// Orchestrates the full workflow: arranges tasks from DataSource × SocialTopic combinations
+  /// The platforms to create listening tasks for.
+  /// </summary>
+  private static readonly PlatformType[] SupportedPlatforms =
+  [
+      PlatformType.Bluesky,
+      PlatformType.Mastodon
+  ];
+
+  /// <summary>
+  /// Orchestrates the full workflow: arranges tasks from PlatformType × SocialTopic combinations
   /// and publishes them using the Transactional Outbox pattern.
   /// </summary>
-  /// <returns>A task representing the asynchronous operation.</returns>
   public async Task ArrangeAndPublishTasks()
   {
     // Step 1: Arrange and save tasks to database
@@ -40,20 +50,18 @@ internal partial class SocialListeningTaskPublisher(AppDbContext dbContext, IPub
 
 
   /// <summary>
-  /// Creates social listening tasks by joining all DataSource × SocialTopic combinations
+  /// Creates social listening tasks by joining all PlatformType × SocialTopic combinations
   /// and saves them to the database.
   /// </summary>
-  /// <returns>A task representing the asynchronous operation.</returns>
   private async Task ArrangeTasks()
   {
     try
     {
       LogStartingTaskArrangement(logger);
 
-      var dataSources = await dbContext.DataSources.AsNoTracking().ToListAsync();
       var socialTopics = await dbContext.SocialTopics.AsNoTracking().ToListAsync();
 
-      foreach (var dataSource in dataSources)
+      foreach (var platform in SupportedPlatforms)
       {
         foreach (var socialTopic in socialTopics)
         {
@@ -63,7 +71,7 @@ internal partial class SocialListeningTaskPublisher(AppDbContext dbContext, IPub
             CreatedAt = DateTimeOffset.UtcNow,
             Status = TaskProgressStatus.Queued,
             SocialTopicId = socialTopic.Id,
-            SourcePlatformId = dataSource.Id,
+            Platform = platform,
           };
           dbContext.SocialListeningTasks.Add(task);
         }
@@ -71,7 +79,7 @@ internal partial class SocialListeningTaskPublisher(AppDbContext dbContext, IPub
 
       await dbContext.SaveChangesAsync();
 
-      LogTasksArranged(logger, dataSources.Count * socialTopics.Count);
+      LogTasksArranged(logger, SupportedPlatforms.Length * socialTopics.Count);
     }
     catch (Exception ex)
     {
@@ -83,7 +91,6 @@ internal partial class SocialListeningTaskPublisher(AppDbContext dbContext, IPub
   /// <summary>
   /// Fetches the newly created tasks from the database with populated SocialTopic.
   /// </summary>
-  /// <returns>An array of <see cref="SocialListeningTask"/> entities with SocialTopic populated.</returns>
   private async Task<SocialListeningTask[]> FetchQueuedTasks()
   {
     try
@@ -112,8 +119,6 @@ internal partial class SocialListeningTaskPublisher(AppDbContext dbContext, IPub
   /// For each task, saves it to the database and publishes a <see cref="StartSocialListeningTask"/> command
   /// within the same database transaction, ensuring atomicity.
   /// </summary>
-  /// <param name="tasks">The tasks to publish.</param>
-  /// <returns>A task representing the asynchronous operation.</returns>
   private async Task PublishTasks(SocialListeningTask[] tasks)
   {
     try
@@ -131,7 +136,9 @@ internal partial class SocialListeningTaskPublisher(AppDbContext dbContext, IPub
           CreatedAt = task.CreatedAt,
           Query = task.Query,
           SocialTopicId = task.SocialTopicId,
-          SourcePlatformId = task.SourcePlatformId
+          // Use a consistent Guid for each platform type (derived from platform name)
+          SourcePlatformId = GetPlatformGuid(task.Platform),
+          Platform = task.Platform
         };
 
         await publishEndpoint.Publish(command);
@@ -149,6 +156,16 @@ internal partial class SocialListeningTaskPublisher(AppDbContext dbContext, IPub
     }
   }
 
+  /// <summary>
+  /// Generates a consistent Guid for each platform type.
+  /// This ensures the same platform always gets the same Guid across services.
+  /// </summary>
+  private static Guid GetPlatformGuid(PlatformType platform)
+  {
+    // Use UUIDv5-like approach: derive Guid from platform name
+    return new Guid(MD5.HashData(System.Text.Encoding.UTF8.GetBytes($"platform:{platform}")));
+  }
+
 
   [LoggerMessage(
       Level = LogLevel.Information,
@@ -157,7 +174,7 @@ internal partial class SocialListeningTaskPublisher(AppDbContext dbContext, IPub
 
   [LoggerMessage(
       Level = LogLevel.Information,
-      Message = "Arranged {TaskCount} social listening tasks from DataSource × SocialTopic combinations")]
+      Message = "Arranged {TaskCount} social listening tasks from PlatformType × SocialTopic combinations")]
   static partial void LogTasksArranged(ILogger<SocialListeningTaskPublisher> logger, int taskCount);
 
   [LoggerMessage(

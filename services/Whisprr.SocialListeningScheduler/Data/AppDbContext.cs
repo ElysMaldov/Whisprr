@@ -16,27 +16,8 @@ internal class AppDbContext : DbContext
   protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
   {
     base.OnConfiguring(optionsBuilder);
-
-    // Use these if I need to seed whenever a migration happens too
-    // optionsBuilder.UseSeeding((context, _) =>
-    // {
-    //   if (context is AppDbContext appContext)
-    //   {
-    //     // Synchronously wait for the async seed operation
-    //     AppDbContextSeeder.SeedAsync(appContext).GetAwaiter().GetResult();
-    //   }
-    // });
-
-    // optionsBuilder.UseAsyncSeeding(async (context, _, cancellationToken) =>
-    // {
-    //   if (context is AppDbContext appContext)
-    //   {
-    //     await AppDbContextSeeder.SeedAsync(appContext, cancellationToken);
-    //   }
-    // });
   }
 
-  public DbSet<DataSource> DataSources { get; set; } = null!;
   public DbSet<SocialTopic> SocialTopics { get; set; } = null!;
   public DbSet<SocialListeningTask> SocialListeningTasks { get; set; } = null!;
 
@@ -50,6 +31,7 @@ internal class AppDbContext : DbContext
 
     // Register PostgreSQL enum types for migrations
     modelBuilder.HasPostgresEnum<TaskProgressStatus>();
+    modelBuilder.HasPostgresEnum<PlatformType>();
 
     // SocialTopic: Keywords conversion (array <-> comma-separated string)
     modelBuilder.Entity<SocialTopic>(entity =>
@@ -77,11 +59,6 @@ internal class AppDbContext : DbContext
       entity.HasOne(e => e.SocialTopic)
           .WithMany(e => e.SocialListeningTasks)
           .OnDelete(DeleteBehavior.Cascade);
-
-      // Restrict delete when DataSource is deleted (tasks should be deleted first)
-      entity.HasOne(e => e.DataSource)
-          .WithMany(e => e.SocialListeningTasks)
-          .OnDelete(DeleteBehavior.Restrict);
     });
   }
 }
