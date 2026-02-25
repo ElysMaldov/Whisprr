@@ -14,8 +14,6 @@ public class SocialListeningTask : ITrackableModel
   public Guid SocialTopicId { get; set; }
   public SocialTopic SocialTopic { get; set; } = null!; // Use dammit to avoid this field being nullable by compiler, but will be populated by EF Core. Kind of like late in dart.
 
-  public required Guid SourcePlatformId { get; set; }
-
   /// <summary>
   /// The platform type for this listening task (e.g., Bluesky, Mastodon).
   /// </summary>

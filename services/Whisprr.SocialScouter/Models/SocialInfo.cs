@@ -16,8 +16,6 @@ internal record SocialInfo
   [Url]
   public required string OriginalUrl { get; set; }
   public required string OriginalId { get; set; }
-  public required Guid SourcePlatformId { get; set; }
-
   /// <summary>
   /// The platform type this social info came from (e.g., Bluesky, Mastodon).
   /// </summary>

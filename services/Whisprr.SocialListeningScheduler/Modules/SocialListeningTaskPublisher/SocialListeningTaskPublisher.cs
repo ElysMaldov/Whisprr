@@ -136,8 +136,6 @@ internal partial class SocialListeningTaskPublisher(
           CreatedAt = task.CreatedAt,
           Query = task.Query,
           SocialTopicId = task.SocialTopicId,
-          // Use a consistent Guid for each platform type (derived from platform name)
-          SourcePlatformId = GetPlatformGuid(task.Platform),
           Platform = task.Platform
         };
 
@@ -155,17 +153,6 @@ internal partial class SocialListeningTaskPublisher(
       throw;
     }
   }
-
-  /// <summary>
-  /// Generates a consistent Guid for each platform type.
-  /// This ensures the same platform always gets the same Guid across services.
-  /// </summary>
-  private static Guid GetPlatformGuid(PlatformType platform)
-  {
-    // Use UUIDv5-like approach: derive Guid from platform name
-    return new Guid(MD5.HashData(System.Text.Encoding.UTF8.GetBytes($"platform:{platform}")));
-  }
-
 
   [LoggerMessage(
       Level = LogLevel.Information,

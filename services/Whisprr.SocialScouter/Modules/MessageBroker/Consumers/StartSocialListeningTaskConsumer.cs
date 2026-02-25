@@ -25,7 +25,6 @@ internal sealed partial class StartSocialListeningTaskConsumer(
         CreatedAt = taskContract.CreatedAt,
         Id = taskContract.TaskId,
         SocialTopicId = taskContract.SocialTopicId,
-        SourcePlatformId = taskContract.SourcePlatformId,
         Platform = taskContract.Platform,
         UpdatedAt = DateTimeOffset.UtcNow
       };

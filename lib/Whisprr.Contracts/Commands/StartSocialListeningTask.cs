@@ -8,7 +8,6 @@ public record StartSocialListeningTask
     public Guid CorrelationId { get; init; }
 
     public required Guid SocialTopicId { get; set; }
-    public required Guid SourcePlatformId { get; set; }
 
     /// <summary>
     /// The platform type for this listening task. Used to route to the correct listener.
