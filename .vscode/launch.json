@@ -60,9 +60,43 @@
       }
     },
     {
+      "name": "Whisprr.AuthService",
+      "console": "integratedTerminal",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/services/Whisprr.AuthService/bin/Debug/net10.0/Whisprr.AuthService.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/services/Whisprr.AuthService",
+      "stopAtEntry": false,
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(http://\\S+)",
+        "uriFormat": "%s/swagger"
+      },
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "http://localhost:5002"
+      }
+    },
+    {
       "name": ".NET Core Attach",
       "type": "coreclr",
       "request": "attach"
+    },
+    {
+      "name": "whisprr-web-app",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "${workspaceFolder}/apps/whisprr-web-app",
+      "console": "integratedTerminal",
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "Local:\\s+(http://localhost:[0-9]+)",
+        "uriFormat": "%s"
+      }
     }
   ],
   "compounds": [
@@ -74,7 +108,24 @@
         "Whisprr.SocialListeningScheduler",
         "Whisprr.SocialScouter"
       ],
-      // Setting this to true ensures that if one service dies, they all stop, keeping your dev environment clean.
+      "stopAll": true
+    },
+    {
+      "name": "Auth + Web App",
+      "console": "integratedTerminal",
+      "configurations": ["Whisprr.AuthService", "whisprr-web-app"],
+      "stopAll": true
+    },
+    {
+      "name": "Full Stack (All)",
+      "console": "integratedTerminal",
+      "configurations": [
+        "Whisprr.AuthService",
+        "Whisprr.Api",
+        "Whisprr.SocialListeningScheduler",
+        "Whisprr.SocialScouter",
+        "whisprr-web-app"
+      ],
       "stopAll": true
     }
   ]
