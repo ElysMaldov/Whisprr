@@ -1,25 +1,15 @@
-using Whisprr.Contracts.Enums;
+
 using Whisprr.Utils.Interfaces;
 
 namespace Whisprr.SocialScouter.Models;
 
-public class SocialListeningTask : ITrackableModel
+internal record SocialListeningTask : ITrackableModel
 {
-  public Guid Id { get; set; }
-  public DateTimeOffset CreatedAt { get; set; }
+  public required Guid Id { get; set; }
+  public required DateTimeOffset CreatedAt { get; set; }
   public DateTimeOffset? UpdatedAt { get; set; }
 
-  public TaskProgressStatus Status { get; set; }
-
-  public Guid SocialTopicId { get; set; }
-  public SocialTopic SocialTopic { get; set; } = null!; // Use dammit to avoid this field being nullable by compiler, but will be populated by EF Core. Kind of like late in dart.
-
-  public Guid SourcePlatformId { get; set; }
-  public DataSource DataSource { get; set; } = null!;
-  public ICollection<SocialInfo> GeneratedSocialInfos { get; set; } = []; // Since the name doesn't match convention, we setup the relationship using FLuent API in the context
-
-  public string Query
-  {
-    get => string.Join(" ", SocialTopic.Keywords);
-  }
+  public required Guid SocialTopicId { get; set; }
+  public required Guid SourcePlatformId { get; set; }
+  public required string Query { get; init; }
 }

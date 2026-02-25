@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using Whisprr.Contracts.Enums;
 
 namespace Whisprr.SocialScouter.Models;
@@ -7,7 +6,7 @@ namespace Whisprr.SocialScouter.Models;
 /// <summary>
 /// Describes a social information from a post, timeline, feed, etc.
 /// </summary>
-public class SocialInfo
+internal class SocialInfo
 {
   public Guid Id { get; set; }
   [MaxLength(100)]
@@ -23,13 +22,5 @@ public class SocialInfo
   /// PK for <see cref="SourcePlatform"/>
   /// </summary>
   public Guid SourcePlatformId { get; set; }
-  /// <summary>
-  /// Reference navigation to populate the data when fetched
-  /// </summary>
-  public DataSource DataSource { get; set; } = null!;
-
   public Guid GeneratedFromTaskId { get; set; }
-
-  [ForeignKey(nameof(GeneratedFromTaskId))]
-  public SocialListeningTask GeneratedFromTask { get; set; } = null!;
 }
