@@ -13,15 +13,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import * as z from "zod";
 import { RegisterSchema } from "./RegisterSchema";
-import { useNavigate } from "@tanstack/react-router";
-import { authRepository } from "@/data/repositories/auth";
+import { useRegister } from "@/hooks/useRegister";
 
 type Schema = z.infer<typeof RegisterSchema>;
 
 export interface RegisterFormProps {}
 
 export function RegisterForm({}: RegisterFormProps) {
-  const navigate = useNavigate();
+  const { mutateAsync: register, isPending: isRegisterPending } = useRegister();
+  
   const form = useForm<Schema>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {
@@ -32,19 +32,14 @@ export function RegisterForm({}: RegisterFormProps) {
     }
   });
 
-  const {
-    formState: { isSubmitting }
-  } = form;
-
   const handleSubmit = form.handleSubmit(async (data: Schema) => {
     try {
-      await authRepository.register({
+      await register({
         email: data.email,
         password: data.password,
         displayName: data.displayName
       });
       form.reset();
-      navigate({ to: "/login" });
     } catch (error) {
       console.error(error);
     }
@@ -161,10 +156,10 @@ export function RegisterForm({}: RegisterFormProps) {
       </FieldGroup>
       <div className="flex justify-end items-center w-full">
         <Button
-          disabled={isSubmitting}
+          disabled={isRegisterPending}
           type="submit"
         >
-          {isSubmitting ? "Submitting..." : "Register"}
+          {isRegisterPending ? "Submitting..." : "Register"}
         </Button>
       </div>
     </form>

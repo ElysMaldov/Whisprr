@@ -13,13 +13,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import * as z from "zod";
 import { LoginSchema } from "./LoginSchema";
-import { authRepository } from "@/data/repositories/auth";
+import { useLogin } from "@/hooks/useLogin";
 
 type Schema = z.infer<typeof LoginSchema>;
 
 export interface LoginFormProps {}
 
 export function LoginForm({}: LoginFormProps) {
+  const { mutateAsync: login, isPending } = useLogin();
+  
   const form = useForm<Schema>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -28,13 +30,9 @@ export function LoginForm({}: LoginFormProps) {
     }
   });
 
-  const {
-    formState: { isSubmitting }
-  } = form;
-
   const handleSubmit = form.handleSubmit(async (data: Schema) => {
     try {
-      await authRepository.login(data);
+      await login(data);
       form.reset();
     } catch (error) {
       console.error(error);
@@ -103,10 +101,10 @@ export function LoginForm({}: LoginFormProps) {
       </FieldGroup>
       <div className="flex justify-end items-center w-full">
         <Button
-          disabled={isSubmitting}
+          disabled={isPending}
           type="submit"
         >
-          {isSubmitting ? "Submitting..." : "Submit"}
+          {isPending ? "Submitting..." : "Submit"}
         </Button>
       </div>
     </form>
