@@ -2,8 +2,28 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { SectionCards } from "@/pages/DashboardScreen/SectionCards";
 import { SiteHeader } from "@/pages/DashboardScreen/SiteHeader";
 import { AppSidebar } from "./AppSidebar";
+import { useSocialTopicHub } from "@/hooks/useSocialTopicHub";
+import { useEffect } from "react";
 
 const DashboardScreen = () => {
+  // Setup WebSocket connection to Whisprr.Api
+  const { isConnected, onNewInfo } = useSocialTopicHub();
+
+  useEffect(() => {
+    if (!isConnected) return;
+
+    // Subscribe to real-time events
+    const unsubscribeNewInfo = onNewInfo((info) => {
+      console.log("New social info received:", info);
+      // TODO: Handle new social info (e.g., update UI, show notification)
+    });
+
+    // Cleanup subscriptions on unmount
+    return () => {
+      unsubscribeNewInfo();
+    };
+  }, [isConnected, onNewInfo]);
+
   return (
     <SidebarProvider
       style={
