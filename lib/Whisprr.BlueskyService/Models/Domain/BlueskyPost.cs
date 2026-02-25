@@ -10,8 +10,7 @@ public readonly struct BlueskyPost(
     int repostCount,
     int likeCount,
     int quoteCount,
-    DateTimeOffset indexedAt,
-    string[] labels)
+    DateTimeOffset indexedAt)
 {
     public string Uri { get; } = uri;
     public string CId { get; } = cId;
@@ -23,5 +22,4 @@ public readonly struct BlueskyPost(
     public int LikeCount { get; } = likeCount;
     public int QuoteCount { get; } = quoteCount;
     public DateTimeOffset IndexedAt { get; } = indexedAt;
-    public string[] Labels { get; } = labels;
 }

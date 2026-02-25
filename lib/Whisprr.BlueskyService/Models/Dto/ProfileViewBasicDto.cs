@@ -18,9 +18,6 @@ internal readonly struct ProfileViewBasicDto
     [JsonPropertyName("avatar")]
     public string Avatar { get; init; }
 
-    [JsonPropertyName("labels")]
-    public string[] Labels { get; init; }
-
     [JsonPropertyName("createdAt")]
     public DateTimeOffset CreatedAt { get; init; }
 
@@ -31,6 +28,6 @@ internal readonly struct ProfileViewBasicDto
 
     public BlueskyAuthor ToDomain()
     {
-        return new BlueskyAuthor(DId, Handle, DisplayName, Avatar, Labels, CreatedAt);
+        return new BlueskyAuthor(DId, Handle, DisplayName, Avatar, CreatedAt);
     }
 }

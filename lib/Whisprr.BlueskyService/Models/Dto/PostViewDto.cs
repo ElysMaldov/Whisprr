@@ -36,9 +36,6 @@ internal readonly struct PostViewDto
     [JsonPropertyName("indexedAt")]
     public DateTimeOffset IndexedAt { get; init; }
 
-    [JsonPropertyName("labels")]
-    public string[] Labels { get; init; }
-
     public static PostViewDto FromJson(string json)
     {
         return JsonSerializer.Deserialize(json, BlueskyDtoContext.Default.PostViewDto);
@@ -56,7 +53,6 @@ internal readonly struct PostViewDto
             RepostCount,
             LikeCount,
             QuoteCount,
-            IndexedAt,
-            Labels);
+            IndexedAt);
     }
 }
