@@ -328,4 +328,4 @@ const SubMenuLink = ({ item }: { item: MenuItem }) => {
   );
 };
 
-export { Navbar as Navbar1 };
+export { Navbar };

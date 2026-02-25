@@ -1,9 +1,9 @@
-import Hero from "@/components/Hero";
+import { LoginForm } from "@/pages/LoginScreen/LoginForm";
 import { Navbar } from "@/components/Navbar";
 
-export interface HomeScreenProps {}
+export interface LoginScreenProps {}
 
-const HomeScreen = ({}: HomeScreenProps) => {
+const LoginScreen = ({}: LoginScreenProps) => {
   return (
     <section className="flex flex-col w-full min-h-screen">
       <Navbar
@@ -19,9 +19,11 @@ const HomeScreen = ({}: HomeScreenProps) => {
           }
         }}
       />
-      <Hero className="w-full flex items-center justify-center flex-1" />
+      <main className="flex flex-1 items-center justify-center">
+        <LoginForm />
+      </main>
     </section>
   );
 };
 
-export default HomeScreen;
+export default LoginScreen;
