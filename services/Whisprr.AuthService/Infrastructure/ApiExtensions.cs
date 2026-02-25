@@ -11,7 +11,28 @@ public static class ApiExtensions
             options.Conventions.Add(new RouteTokenTransformerConvention(new KebabCaseParameterTransformer()));
         });
 
+        // Add CORS for web app
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("WebApp", policy =>
+            {
+                policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
+                      .AllowAnyHeader()
+                      .AllowAnyMethod()
+                      .AllowCredentials();
+            });
+        });
+
         return builder;
+    }
+
+    public static WebApplication UseApiServices(this WebApplication app)
+    {
+        app.UseCors("WebApp");
+        app.UseHttpsRedirection();
+        app.MapControllers();
+
+        return app;
     }
 
     class KebabCaseParameterTransformer : IOutboundParameterTransformer
