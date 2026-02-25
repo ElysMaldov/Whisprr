@@ -1,12 +1,9 @@
-import { LoginForm } from "@/pages/LoginScreen/LoginForm";
 import { Navbar } from "@/components/Navbar";
-import type AuthRepository from "@/data/repositories/auth";
+import { LoginForm } from "@/pages/LoginScreen/LoginForm";
 
-export interface LoginScreenProps {
-  authRepository: AuthRepository;
-}
+export interface LoginScreenProps {}
 
-const LoginScreen = ({ authRepository }: LoginScreenProps) => {
+const LoginScreen = ({}: LoginScreenProps) => {
   return (
     <section className="flex flex-col w-full min-h-screen">
       <Navbar
@@ -23,7 +20,7 @@ const LoginScreen = ({ authRepository }: LoginScreenProps) => {
         }}
       />
       <main className="flex flex-1 items-center justify-center">
-        <LoginForm authRepository={authRepository} />
+        <LoginForm />
       </main>
     </section>
   );

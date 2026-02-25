@@ -16,7 +16,5 @@ export const Route = createFileRoute("/_unauth-only/register")({
 });
 
 function RouteComponent() {
-  const { authRepository } = Route.useRouteContext();
-
-  return <RegisterScreen authRepository={authRepository} />;
+  return <RegisterScreen />;
 }

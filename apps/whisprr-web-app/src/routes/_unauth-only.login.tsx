@@ -6,7 +6,5 @@ export const Route = createFileRoute("/_unauth-only/login")({
 });
 
 function RouteComponent() {
-  const { authRepository } = Route.useRouteContext();
-
-  return <LoginScreen authRepository={authRepository} />;
+  return <LoginScreen />;
 }

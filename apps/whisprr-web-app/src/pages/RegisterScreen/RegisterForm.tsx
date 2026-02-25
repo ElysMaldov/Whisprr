@@ -13,16 +13,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import * as z from "zod";
 import { RegisterSchema } from "./RegisterSchema";
-import type AuthRepository from "@/data/repositories/auth";
 import { useNavigate } from "@tanstack/react-router";
+import { authRepository } from "@/data/repositories/auth";
 
 type Schema = z.infer<typeof RegisterSchema>;
 
-export interface RegisterFormProps {
-  authRepository: AuthRepository;
-}
+export interface RegisterFormProps {}
 
-export function RegisterForm({ authRepository }: RegisterFormProps) {
+export function RegisterForm({}: RegisterFormProps) {
   const navigate = useNavigate();
   const form = useForm<Schema>({
     resolver: zodResolver(RegisterSchema),
@@ -146,7 +144,9 @@ export function RegisterForm({ authRepository }: RegisterFormProps) {
               className="gap-1 col-span-full"
             >
               <FieldContent className="gap-0.5">
-                <FieldLabel htmlFor="confirmPassword">Confirm Password</FieldLabel>
+                <FieldLabel htmlFor="confirmPassword">
+                  Confirm Password
+                </FieldLabel>
               </FieldContent>
               <Password
                 {...field}

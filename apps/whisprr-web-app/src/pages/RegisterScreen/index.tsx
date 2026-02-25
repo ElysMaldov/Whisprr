@@ -1,12 +1,9 @@
-import { RegisterForm } from "@/pages/RegisterScreen/RegisterForm";
 import { Navbar } from "@/components/Navbar";
-import type AuthRepository from "@/data/repositories/auth";
+import { RegisterForm } from "@/pages/RegisterScreen/RegisterForm";
 
-export interface RegisterScreenProps {
-  authRepository: AuthRepository;
-}
+export interface RegisterScreenProps {}
 
-const RegisterScreen = ({ authRepository }: RegisterScreenProps) => {
+const RegisterScreen = () => {
   return (
     <section className="flex flex-col w-full min-h-screen">
       <Navbar
@@ -23,7 +20,7 @@ const RegisterScreen = ({ authRepository }: RegisterScreenProps) => {
         }}
       />
       <main className="flex flex-1 items-center justify-center">
-        <RegisterForm authRepository={authRepository} />
+        <RegisterForm />
       </main>
     </section>
   );

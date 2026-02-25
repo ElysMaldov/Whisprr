@@ -1,10 +1,11 @@
+import { appAxios } from "@/lib/app-axios";
 import { AuthResponse } from "@/models/dtos/auth/auth-response";
 import type { LoginRequest } from "@/models/dtos/auth/login-request";
 import type { RefreshTokenRequest } from "@/models/dtos/auth/refresh-token-request";
 import type { RegisterRequest } from "@/models/dtos/auth/register-request";
 import type { AxiosInstance } from "axios";
 
-export default class AuthService {
+export class AuthService {
   private axios: AxiosInstance;
 
   constructor(axios: AxiosInstance) {
@@ -43,3 +44,5 @@ export default class AuthService {
     return AuthResponse.parse(response.data);
   }
 }
+
+export const authService = new AuthService(appAxios);

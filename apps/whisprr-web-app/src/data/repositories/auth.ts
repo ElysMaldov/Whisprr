@@ -1,11 +1,11 @@
+import type { User } from "@/models/domain/user";
 import { User as UserSchema } from "@/models/domain/user";
 import type { LoginRequest } from "@/models/dtos/auth/login-request";
 import type { RefreshTokenRequest } from "@/models/dtos/auth/refresh-token-request";
 import type { RegisterRequest } from "@/models/dtos/auth/register-request";
-import type AuthService from "../services/auth";
-import type { User } from "@/models/domain/user";
+import { AuthService, authService } from "../services/auth";
 
-export default class AuthRepository {
+class AuthRepository {
   private authService: AuthService;
 
   constructor(authService: AuthService) {
@@ -27,3 +27,5 @@ export default class AuthRepository {
     return UserSchema.parse(response);
   }
 }
+
+export const authRepository = new AuthRepository(authService);

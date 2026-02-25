@@ -13,15 +13,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import * as z from "zod";
 import { LoginSchema } from "./LoginSchema";
-import type AuthRepository from "@/data/repositories/auth";
+import { authRepository } from "@/data/repositories/auth";
 
 type Schema = z.infer<typeof LoginSchema>;
 
-export interface LoginFormProps {
-  authRepository: AuthRepository;
-}
+export interface LoginFormProps {}
 
-export function LoginForm({ authRepository }: LoginFormProps) {
+export function LoginForm({}: LoginFormProps) {
   const form = useForm<Schema>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
