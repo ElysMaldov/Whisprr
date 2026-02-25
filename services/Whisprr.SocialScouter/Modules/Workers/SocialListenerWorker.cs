@@ -8,7 +8,7 @@ namespace Whisprr.SocialScouter.Modules.Workers;
 /// Worker that consumes listening tasks from the input channel,
 /// executes all registered social listeners in parallel, and produces SocialInfo to the output channel.
 /// </summary>
-public partial class SocialListenerWorker(
+internal partial class SocialListenerWorker(
     ILogger<SocialListenerWorker> logger,
     IServiceScopeFactory scopeFactory,
     ChannelReader<SocialListeningTask> taskChannelReader,
@@ -33,7 +33,7 @@ public partial class SocialListenerWorker(
             using var scope = scopeFactory.CreateScope();
             var listeners = scope.ServiceProvider.GetRequiredService<IEnumerable<ISocialListener>>();
 
-            LogProcessingTask(logger, task.Id, task.SocialTopic.Id);
+            LogProcessingTask(logger, task.Id);
 
             // Execute all listeners in parallel
             var listenerTasks = listeners.Select(listener => ExecuteListenerAsync(listener, task, stoppingToken));
@@ -79,8 +79,8 @@ public partial class SocialListenerWorker(
 
     [LoggerMessage(
         Level = LogLevel.Information,
-        Message = "Processing task {TaskId} for topic {TopicId}")]
-    static partial void LogProcessingTask(ILogger<SocialListenerWorker> logger, Guid taskId, Guid topicId);
+        Message = "Processing task {TaskId}")]
+    static partial void LogProcessingTask(ILogger<SocialListenerWorker> logger, Guid taskId);
 
     [LoggerMessage(
         Level = LogLevel.Debug,

@@ -7,7 +7,7 @@ namespace Whisprr.SocialScouter.Modules.SocialListener.Bluesky;
 /// Bluesky-specific implementation of the social listener.
 /// Searches Bluesky posts using keywords from the listening task.
 /// </summary>
-public class BlueskySocialListener(
+internal class BlueskySocialListener(
     ILogger<BlueskySocialListener> logger,
     IBlueskyService blueskyService) : SocialListener<BlueskySocialListener>(logger)
 {

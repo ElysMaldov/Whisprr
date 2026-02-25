@@ -2,7 +2,7 @@ using Whisprr.SocialScouter.Models;
 
 namespace Whisprr.SocialScouter.Modules.SocialListener;
 
-public abstract partial class SocialListener<T>(ILogger<T> logger) : ISocialListener where T : SocialListener<T>
+internal abstract partial class SocialListener<T>(ILogger<T> logger) : ISocialListener where T : SocialListener<T>
 {
   // We seperate the logger messages for best performance. Since we use Guid,
   // we'll need to box it even when our logger isn't activated (for example we only allow Warning and above).

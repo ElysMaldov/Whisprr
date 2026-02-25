@@ -6,7 +6,7 @@ namespace Whisprr.SocialScouter.Modules.SocialListener;
 /// I still use an interface here for easier Dependency Injection in our program
 /// and tests.
 /// </summary>
-public interface ISocialListener
+internal interface ISocialListener
 {
   public Task<SocialInfo[]> Search(SocialListeningTask task);
 }

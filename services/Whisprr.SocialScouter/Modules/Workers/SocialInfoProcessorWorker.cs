@@ -7,7 +7,7 @@ namespace Whisprr.SocialScouter.Modules.Workers;
 /// Worker that consumes SocialInfo from the channel for further processing.
 /// Only one instance of this worker should run (SingleReader = true on the channel).
 /// </summary>
-public partial class SocialInfoProcessorWorker(
+internal partial class SocialInfoProcessorWorker(
     ILogger<SocialInfoProcessorWorker> logger,
     ChannelReader<SocialInfo> socialInfoChannelReader) : BackgroundService
 {
@@ -30,7 +30,7 @@ public partial class SocialInfoProcessorWorker(
 
     private async Task ProcessSocialInfoAsync(SocialInfo socialInfo, CancellationToken stoppingToken)
     {
-        LogProcessingSocialInfo(logger, socialInfo.Id, socialInfo.DataSource?.Name);
+        LogProcessingSocialInfo(logger, socialInfo.Id);
 
         // TODO: Implement processing logic
         // Examples:
@@ -54,8 +54,8 @@ public partial class SocialInfoProcessorWorker(
 
     [LoggerMessage(
         Level = LogLevel.Debug,
-        Message = "Processing SocialInfo {SocialInfoId} from {Platform}")]
-    static partial void LogProcessingSocialInfo(ILogger<SocialInfoProcessorWorker> logger, Guid socialInfoId, string? platform);
+        Message = "Processing SocialInfo {SocialInfoId}")]
+    static partial void LogProcessingSocialInfo(ILogger<SocialInfoProcessorWorker> logger, Guid socialInfoId);
 
     [LoggerMessage(
         Level = LogLevel.Information,
