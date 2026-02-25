@@ -14,6 +14,7 @@ import { Controller, useForm } from "react-hook-form";
 import * as z from "zod";
 import { LoginSchema } from "./LoginSchema";
 import { useLogin } from "@/hooks/useLogin";
+import { useNavigate } from "@tanstack/react-router";
 
 type Schema = z.infer<typeof LoginSchema>;
 
@@ -21,7 +22,8 @@ export interface LoginFormProps {}
 
 export function LoginForm({}: LoginFormProps) {
   const { mutateAsync: login, isPending } = useLogin();
-  
+  const navigate = useNavigate();
+
   const form = useForm<Schema>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -34,6 +36,9 @@ export function LoginForm({}: LoginFormProps) {
     try {
       await login(data);
       form.reset();
+      navigate({
+        to: "/dashboard"
+      });
     } catch (error) {
       console.error(error);
     }

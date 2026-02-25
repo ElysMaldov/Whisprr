@@ -14,6 +14,7 @@ import { Controller, useForm } from "react-hook-form";
 import * as z from "zod";
 import { RegisterSchema } from "./RegisterSchema";
 import { useRegister } from "@/hooks/useRegister";
+import { useNavigate } from "@tanstack/react-router";
 
 type Schema = z.infer<typeof RegisterSchema>;
 
@@ -21,7 +22,8 @@ export interface RegisterFormProps {}
 
 export function RegisterForm({}: RegisterFormProps) {
   const { mutateAsync: register, isPending: isRegisterPending } = useRegister();
-  
+  const navigate = useNavigate();
+
   const form = useForm<Schema>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {
@@ -40,6 +42,9 @@ export function RegisterForm({}: RegisterFormProps) {
         displayName: data.displayName
       });
       form.reset();
+      navigate({
+        to: "/dashboard"
+      });
     } catch (error) {
       console.error(error);
     }
