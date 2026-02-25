@@ -6,7 +6,8 @@ export const router = createRouter({
   // These will be populate in App.tsx
   context: {
     authRepository: undefined!,
-    queryClient: undefined!
+    queryClient: undefined!,
+    auth: undefined!
   }
 });
 
