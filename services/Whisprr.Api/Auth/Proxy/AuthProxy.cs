@@ -41,7 +41,7 @@ public partial class AuthProxy(IHttpClientFactory factory, ILogger<AuthProxy> lo
         try
         {
             var response = await _httpClient.GetAsync(
-                $"/api/users/{userId}",
+                $"/api/auth/users/{userId}",
                 cancellationToken);
 
             if (!response.IsSuccessStatusCode)
@@ -54,6 +54,22 @@ public partial class AuthProxy(IHttpClientFactory factory, ILogger<AuthProxy> lo
             LogUserInfoError(_logger, userId, ex.Message);
             return null;
         }
+    }
+
+    public async Task<AuthResponse> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default)
+    {
+        var response = await _httpClient.PostAsJsonAsync("/api/auth/login", request, cancellationToken);
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<AuthResponse>(cancellationToken)
+            ?? throw new InvalidOperationException("Invalid response from auth service");
+    }
+
+    public async Task<AuthResponse> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default)
+    {
+        var response = await _httpClient.PostAsJsonAsync("/api/auth/register", request, cancellationToken);
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<AuthResponse>(cancellationToken)
+            ?? throw new InvalidOperationException("Invalid response from auth service");
     }
 
     [LoggerMessage(
