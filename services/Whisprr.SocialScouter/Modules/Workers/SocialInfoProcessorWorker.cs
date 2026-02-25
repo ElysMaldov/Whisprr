@@ -1,4 +1,6 @@
 using System.Threading.Channels;
+using MassTransit;
+using Whisprr.Contracts.Events;
 using Whisprr.SocialScouter.Models;
 
 namespace Whisprr.SocialScouter.Modules.Workers;
@@ -9,7 +11,8 @@ namespace Whisprr.SocialScouter.Modules.Workers;
 /// </summary>
 internal partial class SocialInfoProcessorWorker(
     ILogger<SocialInfoProcessorWorker> logger,
-    ChannelReader<SocialInfo> socialInfoChannelReader) : BackgroundService
+    ChannelReader<SocialInfo> socialInfoChannelReader,
+    IPublishEndpoint publishEndpoint) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -32,18 +35,23 @@ internal partial class SocialInfoProcessorWorker(
     {
         LogProcessingSocialInfo(logger, socialInfo.Id);
 
-        // TODO: Implement processing logic
-        // Examples:
-        // - Save to database
-        // - Analyze sentiment
-        // - Send notifications
-        // - Forward to another service
-        // - etc.
+        // Publish the SocialInfoCreated event
+        var socialInfoCreated = new SocialInfoCreated
+        {
+            InfoId = socialInfo.Id,
+            CreatedAt = socialInfo.CreatedAt,
+            Title = socialInfo.Title,
+            Content = socialInfo.Content,
+            OriginalUrl = socialInfo.OriginalUrl,
+            OriginalId = socialInfo.OriginalId,
+            Platform = socialInfo.Platform,
+            GeneratedFromTaskId = socialInfo.GeneratedFromTaskId
+        };
+
+        await publishEndpoint.Publish(socialInfoCreated, stoppingToken);
 
         var contentPreview = socialInfo.Content?[..Math.Min(50, socialInfo.Content?.Length ?? 0)];
         LogSocialInfoProcessed(logger, socialInfo.Id, contentPreview);
-
-        await Task.CompletedTask;
     }
 
     // LoggerMessage source-generated methods to avoid boxing
@@ -59,7 +67,7 @@ internal partial class SocialInfoProcessorWorker(
 
     [LoggerMessage(
         Level = LogLevel.Information,
-        Message = "Processed SocialInfo {SocialInfoId}: {ContentPreview}")]
+        Message = "Processed and published SocialInfo {SocialInfoId}: {ContentPreview}")]
     static partial void LogSocialInfoProcessed(ILogger<SocialInfoProcessorWorker> logger, Guid socialInfoId, string? contentPreview);
 
     [LoggerMessage(
