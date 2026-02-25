@@ -3,12 +3,13 @@ using Whisprr.MessageBroker.Modules.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+
 
 builder
     .AddAuthDbContext()
     .AddMessageBroker()
     .AddAuthServices()
+    .AddApiServices()
     .AddApiDocumentation();
 
 var app = builder.Build();
