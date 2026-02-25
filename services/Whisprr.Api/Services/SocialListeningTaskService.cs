@@ -8,10 +8,12 @@ namespace Whisprr.Api.Services;
 public class SocialListeningTaskService : ISocialListeningTaskService
 {
     private readonly AppDbContext _dbContext;
+    private readonly INotificationService _notificationService;
 
-    public SocialListeningTaskService(AppDbContext dbContext)
+    public SocialListeningTaskService(AppDbContext dbContext, INotificationService notificationService)
     {
         _dbContext = dbContext;
+        _notificationService = notificationService;
     }
 
     public async Task<TaskResponse> CreateTaskAsync(Guid userId, CreateTaskRequest request, CancellationToken cancellationToken = default)
@@ -33,6 +35,17 @@ public class SocialListeningTaskService : ISocialListeningTaskService
 
         _dbContext.SocialListeningTasks.Add(task);
         await _dbContext.SaveChangesAsync(cancellationToken);
+
+        // Broadcast new task to subscribers
+        var taskSummary = new TaskSummaryResponse
+        {
+            Id = task.Id,
+            Status = task.Status,
+            CreatedAt = task.CreatedAt,
+            ItemsCollected = task.ItemsCollected,
+            Platform = task.Platform
+        };
+        await _notificationService.NotifyNewTaskAsync(task.TopicId, taskSummary, cancellationToken);
 
         return MapToResponse(task, topic.Name);
     }
@@ -122,6 +135,18 @@ public class SocialListeningTaskService : ISocialListeningTaskService
         task.CompletedAt = DateTime.UtcNow;
         
         await _dbContext.SaveChangesAsync(cancellationToken);
+
+        // Broadcast status change to subscribers
+        var taskSummary = new TaskSummaryResponse
+        {
+            Id = task.Id,
+            Status = task.Status,
+            CreatedAt = task.CreatedAt,
+            ItemsCollected = task.ItemsCollected,
+            Platform = task.Platform
+        };
+        await _notificationService.NotifyTaskStatusChangedAsync(task.TopicId, taskSummary, cancellationToken);
+
         return true;
     }
 
@@ -143,6 +168,17 @@ public class SocialListeningTaskService : ISocialListeningTaskService
         task.StartedAt = null;
         
         await _dbContext.SaveChangesAsync(cancellationToken);
+
+        // Broadcast status change to subscribers
+        var taskSummary = new TaskSummaryResponse
+        {
+            Id = task.Id,
+            Status = task.Status,
+            CreatedAt = task.CreatedAt,
+            ItemsCollected = task.ItemsCollected,
+            Platform = task.Platform
+        };
+        await _notificationService.NotifyTaskStatusChangedAsync(task.TopicId, taskSummary, cancellationToken);
         
         return MapToResponse(task, task.Topic.Name);
     }
