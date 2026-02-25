@@ -13,10 +13,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import * as z from "zod";
 import { LoginSchema } from "./LoginSchema";
+import type AuthRepository from "@/data/repositories/auth";
 
 type Schema = z.infer<typeof LoginSchema>;
 
-export function LoginForm() {
+export interface LoginFormProps {
+  authRepository: AuthRepository;
+}
+
+export function LoginForm({ authRepository }: LoginFormProps) {
   const form = useForm<Schema>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -24,14 +29,14 @@ export function LoginForm() {
       password: ""
     }
   });
+
   const {
     formState: { isSubmitting }
   } = form;
 
   const handleSubmit = form.handleSubmit(async (data: Schema) => {
     try {
-      // TODO: implement form submission
-      console.log(data);
+      await authRepository.login(data);
       form.reset();
     } catch (error) {
       console.error(error);

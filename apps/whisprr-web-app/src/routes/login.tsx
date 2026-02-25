@@ -6,5 +6,7 @@ export const Route = createFileRoute("/login")({
 });
 
 function RouteComponent() {
-  return <LoginScreen />;
+  const { authRepository } = Route.useRouteContext();
+
+  return <LoginScreen authRepository={authRepository} />;
 }

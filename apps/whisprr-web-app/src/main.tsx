@@ -1,15 +1,24 @@
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
+import AuthRepository from "./data/repositories/auth";
+import AuthService from "./data/services/auth";
+import { appAxios } from "./lib/app-axios";
+import { queryClient } from "./lib/query-client";
 import { routeTree } from "./routeTree.gen";
 
 import "./index.css";
-import { queryClient } from "./lib/query-client";
+
+// Declare singletons
+
+const authService = new AuthService(appAxios);
+const authRepository = new AuthRepository(authService);
 
 const router = createRouter({
   routeTree,
   context: {
-    queryClient
+    queryClient,
+    authRepository
   }
 });
 

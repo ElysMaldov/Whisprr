@@ -1,3 +1,4 @@
+import type AuthRepository from "@/data/repositories/auth";
 import { QueryClient } from "@tanstack/react-query";
 
 /**
@@ -26,4 +27,5 @@ import { QueryClient } from "@tanstack/react-query";
  */
 export interface RouterContext {
   queryClient: QueryClient;
+  authRepository: AuthRepository;
 }
