@@ -36,7 +36,12 @@ const Hero = ({ className }: HeroProps) => {
             important to you.
           </p>
           <div className="w-full flex justify-center">
-            <Button size="xl">Listen now</Button>
+            <Button
+              size="xl"
+              render={<a href={"/login"} />}
+            >
+              Listen now
+            </Button>
           </div>
         </div>
 
