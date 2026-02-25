@@ -12,7 +12,7 @@ namespace Whisprr.SocialScouter.Modules.Workers;
 internal partial class SocialInfoProcessorWorker(
     ILogger<SocialInfoProcessorWorker> logger,
     ChannelReader<SocialInfo> socialInfoChannelReader,
-    IPublishEndpoint publishEndpoint) : BackgroundService
+    IBus bus) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -48,10 +48,9 @@ internal partial class SocialInfoProcessorWorker(
             GeneratedFromTaskId = socialInfo.GeneratedFromTaskId
         };
 
-        await publishEndpoint.Publish(socialInfoCreated, stoppingToken);
+        await bus.Publish(socialInfoCreated, stoppingToken);
 
-        var contentPreview = socialInfo.Content?[..Math.Min(50, socialInfo.Content?.Length ?? 0)];
-        LogSocialInfoProcessed(logger, socialInfo.Id, contentPreview);
+        LogSocialInfoProcessed(logger, socialInfo.Id);
     }
 
     // LoggerMessage source-generated methods to avoid boxing
@@ -67,8 +66,8 @@ internal partial class SocialInfoProcessorWorker(
 
     [LoggerMessage(
         Level = LogLevel.Information,
-        Message = "Processed and published SocialInfo {SocialInfoId}: {ContentPreview}")]
-    static partial void LogSocialInfoProcessed(ILogger<SocialInfoProcessorWorker> logger, Guid socialInfoId, string? contentPreview);
+        Message = "Processed and published SocialInfo {SocialInfoId}")]
+    static partial void LogSocialInfoProcessed(ILogger<SocialInfoProcessorWorker> logger, Guid socialInfoId);
 
     [LoggerMessage(
         Level = LogLevel.Error,
