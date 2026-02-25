@@ -40,9 +40,10 @@ public partial class AuthService(
         var token = tokenService.GenerateJwtToken(user);
         var refreshToken = tokenService.GenerateRefreshToken();
 
-        // Save refresh token
+        // Save refresh token and update last login
         user.RefreshToken = refreshToken;
         user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
+        user.LastLoginAt = DateTime.UtcNow;
         await dbContext.SaveChangesAsync(cancellationToken);
 
         // Publish event
