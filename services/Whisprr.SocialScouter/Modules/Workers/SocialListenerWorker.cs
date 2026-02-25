@@ -18,11 +18,20 @@ internal partial class SocialListenerWorker(
     {
         LogWorkerStarted(logger);
 
-        await foreach (var task in taskChannelReader.ReadAllAsync(stoppingToken))
-        {
-            // Fire and forget - process each task independently
-            _ = ProcessTaskAsync(task, stoppingToken);
-        }
+        // We use Parallel.ForEachAsync to control how many tasks run at once.
+        // Setting MaxDegreeOfParallelism to something like 5 or 10 ensures
+        // we don't overwhelm the BlueskyService's Rate Limiter's queue immediately.
+        await Parallel.ForEachAsync(
+            taskChannelReader.ReadAllAsync(stoppingToken),
+            new ParallelOptions
+            {
+                CancellationToken = stoppingToken,
+                MaxDegreeOfParallelism = 5
+            },
+            async (task, token) =>
+            {
+                await ProcessTaskAsync(task, token);
+            });
     }
 
     private async Task ProcessTaskAsync(SocialListeningTask task, CancellationToken stoppingToken)
