@@ -8,7 +8,6 @@ public static class ApiExtensions
     public static IHostApplicationBuilder AddApiServices(this IHostApplicationBuilder builder)
     {
         builder.Services.AddControllers();
-        builder.Services.AddAuthorization();
         
         // Add SignalR for real-time updates
         builder.Services.AddSignalR();
@@ -25,7 +24,6 @@ public static class ApiExtensions
     public static WebApplication UseApiServices(this WebApplication app)
     {
         app.UseHttpsRedirection();
-        app.UseAuthorization();
         app.MapControllers();
         
         // Map SignalR hub
