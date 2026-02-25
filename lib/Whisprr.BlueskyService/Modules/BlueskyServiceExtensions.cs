@@ -7,6 +7,8 @@ using BlueskyServiceImpl = Whisprr.BlueskyService.Modules.BlueskyService.Bluesky
 using IBlueskyServiceInterface = Whisprr.BlueskyService.Modules.BlueskyService.IBlueskyService;
 using IBlueskyAuthServiceInterface = Whisprr.BlueskyService.Modules.BlueskyAuthService.IBlueskyAuthService;
 using Whisprr.Caching.Modules;
+using System.Threading.RateLimiting;
+using Polly;
 
 namespace Whisprr.BlueskyService;
 
@@ -32,7 +34,17 @@ public static class BlueskyServiceExtensions
             client.BaseAddress = new Uri(baseUrl);
         })
         .AddHttpMessageHandler<BlueskyAuthHandler>()
-        .AddHttpMessageHandler<BlueskyRefreshSessionHandler>();
+        .AddHttpMessageHandler<BlueskyRefreshSessionHandler>()
+        .AddResilienceHandler("bluesky-limit", builder =>
+        {
+            builder.AddRateLimiter(new FixedWindowRateLimiter(new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 500,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 10,
+                QueueProcessingOrder = QueueProcessingOrder.OldestFirst
+            }));
+        });
 
         // BlueskyAuthService (no auth handlers needed)
         builder.Services.AddHttpClient<IBlueskyAuthServiceInterface, BlueskyAuthServiceImpl>(client =>
