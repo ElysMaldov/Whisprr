@@ -15,6 +15,4 @@ app
     .UseApiDocumentation()
     .UseAuthServices();
 
-await app.InitializeDatabaseAsync();
-
 app.Run();

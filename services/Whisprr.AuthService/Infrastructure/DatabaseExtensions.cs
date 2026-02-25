@@ -26,14 +26,5 @@ public static class DatabaseExtensions
         return builder;
     }
 
-    /// <summary>
-    /// Initializes the database by applying pending migrations.
-    /// </summary>
-    public static async Task InitializeDatabaseAsync(this IHost host)
-    {
-        using var scope = host.Services.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
 
-        await dbContext.Database.MigrateAsync();
-    }
 }
