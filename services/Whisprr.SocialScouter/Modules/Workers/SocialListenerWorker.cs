@@ -1,4 +1,5 @@
 using System.Threading.Channels;
+using Whisprr.Contracts.Enums;
 using Whisprr.SocialScouter.Models;
 using Whisprr.SocialScouter.Modules.SocialListener;
 
@@ -6,7 +7,8 @@ namespace Whisprr.SocialScouter.Modules.Workers;
 
 /// <summary>
 /// Worker that consumes listening tasks from the input channel,
-/// executes all registered social listeners in parallel, and produces SocialInfo to the output channel.
+/// routes them to the appropriate listener based on platform type,
+/// and produces SocialInfo to the output channel.
 /// </summary>
 internal partial class SocialListenerWorker(
     ILogger<SocialListenerWorker> logger,
@@ -42,13 +44,20 @@ internal partial class SocialListenerWorker(
             using var scope = scopeFactory.CreateScope();
             var listeners = scope.ServiceProvider.GetRequiredService<IEnumerable<ISocialListener>>();
 
-            LogProcessingTask(logger, task.Id);
+            // Find the listener that supports this task's platform
+            var listener = listeners.FirstOrDefault(l => l.SupportedPlatform == task.Platform);
 
-            // Execute all listeners in parallel
-            var listenerTasks = listeners.Select(listener => ExecuteListenerAsync(listener, task, stoppingToken));
-            await Task.WhenAll(listenerTasks);
+            if (listener == null)
+            {
+                LogNoListenerFound(logger, task.Platform, task.Id);
+                return;
+            }
 
-            LogTaskCompleted(logger, task.Id);
+            LogProcessingTask(logger, task.Id, task.Platform);
+
+            await ExecuteListenerAsync(listener, task, stoppingToken);
+
+            LogTaskCompleted(logger, task.Id, task.Platform);
         }
         catch (Exception ex)
         {
@@ -71,7 +80,6 @@ internal partial class SocialListenerWorker(
             }
 
             LogPushedSocialInfoBatch(logger, listenerType, socialInfos.Length);
-
             LogListenerCompleted(logger, listenerType, task.Id, socialInfos.Length);
         }
         catch (Exception ex)
@@ -87,9 +95,14 @@ internal partial class SocialListenerWorker(
     static partial void LogWorkerStarted(ILogger<SocialListenerWorker> logger);
 
     [LoggerMessage(
+        Level = LogLevel.Warning,
+        Message = "No listener found for platform {Platform} for task {TaskId}. Skipping task.")]
+    static partial void LogNoListenerFound(ILogger<SocialListenerWorker> logger, PlatformType platform, Guid taskId);
+
+    [LoggerMessage(
         Level = LogLevel.Information,
-        Message = "Processing task {TaskId}")]
-    static partial void LogProcessingTask(ILogger<SocialListenerWorker> logger, Guid taskId);
+        Message = "Processing task {TaskId} for platform {Platform}")]
+    static partial void LogProcessingTask(ILogger<SocialListenerWorker> logger, Guid taskId, PlatformType platform);
 
     [LoggerMessage(
         Level = LogLevel.Debug,
@@ -113,8 +126,8 @@ internal partial class SocialListenerWorker(
 
     [LoggerMessage(
         Level = LogLevel.Information,
-        Message = "Task {TaskId} completed. All listeners executed.")]
-    static partial void LogTaskCompleted(ILogger<SocialListenerWorker> logger, Guid taskId);
+        Message = "Task {TaskId} for platform {Platform} completed.")]
+    static partial void LogTaskCompleted(ILogger<SocialListenerWorker> logger, Guid taskId, PlatformType platform);
 
     [LoggerMessage(
         Level = LogLevel.Error,

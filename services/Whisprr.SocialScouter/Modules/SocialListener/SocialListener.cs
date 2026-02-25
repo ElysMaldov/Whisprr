@@ -1,9 +1,14 @@
+using Whisprr.Contracts.Enums;
 using Whisprr.SocialScouter.Models;
 
 namespace Whisprr.SocialScouter.Modules.SocialListener;
 
 internal abstract partial class SocialListener<T>(ILogger<T> logger) : ISocialListener where T : SocialListener<T>
 {
+    /// <summary>
+    /// The platform type this listener supports. Must be implemented by derived classes.
+    /// </summary>
+    public abstract PlatformType SupportedPlatform { get; }
   // We seperate the logger messages for best performance. Since we use Guid,
   // we'll need to box it even when our logger isn't activated (for example we only allow Warning and above).
   // Boxing means we turn a value type (in this case the Guid that lives in the Stack) into a generic object in the heap, then we have unboxing

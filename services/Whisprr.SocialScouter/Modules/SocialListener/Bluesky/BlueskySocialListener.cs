@@ -1,4 +1,5 @@
 using Whisprr.BlueskyService.Modules.BlueskyService;
+using Whisprr.Contracts.Enums;
 using Whisprr.SocialScouter.Models;
 
 namespace Whisprr.SocialScouter.Modules.SocialListener.Bluesky;
@@ -11,6 +12,11 @@ internal class BlueskySocialListener(
     ILogger<BlueskySocialListener> logger,
     IBlueskyService blueskyService) : SocialListener<BlueskySocialListener>(logger)
 {
+    /// <summary>
+    /// This listener handles Bluesky platform tasks.
+    /// </summary>
+    public override PlatformType SupportedPlatform => PlatformType.Bluesky;
+
     protected override async Task<SocialInfo[]> PerformSearch(SocialListeningTask task)
     {
         var query = task.Query;
