@@ -42,7 +42,7 @@ internal abstract partial class SocialListener<T>(ILogger<T> logger) : ISocialLi
 
       var socialInfos = await PerformSearch(task);
 
-      return [];
+      return socialInfos;
     }
     catch (Exception ex)
     {

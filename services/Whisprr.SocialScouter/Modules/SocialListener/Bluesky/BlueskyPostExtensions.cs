@@ -17,7 +17,7 @@ internal static class BlueskyPostExtensions
         {
             OriginalUrl = blueskyPost.Uri,
             Content = blueskyPost.Record.Text,
-            OriginalId = blueskyPost.CId,
+            OriginalId = blueskyPost.CId
         };
     }
 }
