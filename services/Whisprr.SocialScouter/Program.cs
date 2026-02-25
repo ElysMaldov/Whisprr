@@ -11,7 +11,8 @@ builder
     .AddBlueskyServices()
     .AddMessageBroker(consumersCfg =>
     {
-        consumersCfg.AddConsumer<StartSocialListeningTaskConsumer>();
+        // Add consumer with its definition (PrefetchCount = 750 will be applied)
+        consumersCfg.AddConsumer<StartSocialListeningTaskConsumer>(typeof(StartSocialListeningTaskConsumerDefinition));
     })
     .AddSocialListenerServices();
 
