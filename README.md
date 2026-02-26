@@ -55,7 +55,7 @@ learn and apply in limited time.
 ## AI Usage and Learning
 
 I used Gemini to help learn and understand more about the .NET and C# ecosystem quicker
-than reading StackOverflow or other sources. However, I watched a couple of videos by Milan Jovanonic to learn about .NET especially [MassTransit and RabbitMQ](https://youtu.be/MzC0PgYocmk?si=8P0O4Bk_NlMY6WX0).
+than reading StackOverflow or other sources. However, I watched a couple of videos by Milan Jovanonic to learn about .NET especially [MassTransit and RabbitMQ](https://youtu.be/MzC0PgYocmk?si=8P0O4Bk_NlMY6WX0) and Raw Coding about [Semaphores](https://youtu.be/GKjM4AX8NME?si=TaYTlQr0h2OHQqW8).
 
 I also utilized Kimi Code to help plan and implement some services according to the plans and architecture I envisoned and written before in Obsidian. Even with using AI, it helped me to understand how a .NET project can be setup and organized.
 
