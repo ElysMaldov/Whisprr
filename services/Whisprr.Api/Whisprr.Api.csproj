@@ -15,11 +15,14 @@
     </PackageReference>
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.4" />
+    <PackageReference Include="MassTransit" Version="8.3.6" />
+    <PackageReference Include="MassTransit.EntityFrameworkCore" Version="8.3.6" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\lib\Whisprr.Contracts\Whisprr.Contracts.csproj" />
     <ProjectReference Include="..\..\lib\Whisprr.Utils\Whisprr.Utils.csproj" />
+    <ProjectReference Include="..\..\lib\Whisprr.MessageBroker\Whisprr.MessageBroker.csproj" />
   </ItemGroup>
 
 </Project>
