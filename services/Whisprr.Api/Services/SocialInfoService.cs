@@ -46,7 +46,7 @@ public class SocialInfoService(AppDbContext dbContext) : ISocialInfoService
         var items = await query
             .Skip((filter.Page - 1) * filter.PageSize)
             .Take(filter.PageSize)
-            .Select(i => MapToResponse(i, i.Topic.Name))
+            .Select(i => MapToResponse(i, i.Topic != null ? i.Topic.Name : null))
             .ToListAsync(cancellationToken);
 
         return new SocialInfoListResponse
@@ -68,7 +68,7 @@ public class SocialInfoService(AppDbContext dbContext) : ISocialInfoService
         if (info == null)
             return null;
 
-        return MapToResponse(info, info.Topic.Name);
+        return MapToResponse(info, info.Topic?.Name);
     }
 
     public async Task<SocialInfoListResponse> GetByTopicAsync(Guid topicId, int page = 1, int pageSize = 50, CancellationToken cancellationToken = default)
@@ -84,7 +84,7 @@ public class SocialInfoService(AppDbContext dbContext) : ISocialInfoService
         var items = await query
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .Select(i => MapToResponse(i, i.Topic.Name))
+            .Select(i => MapToResponse(i, i.Topic != null ? i.Topic.Name : null))
             .ToListAsync(cancellationToken);
 
         return new SocialInfoListResponse
@@ -109,7 +109,7 @@ public class SocialInfoService(AppDbContext dbContext) : ISocialInfoService
         var items = await query
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .Select(i => MapToResponse(i, i.Topic.Name))
+            .Select(i => MapToResponse(i, i.Topic != null ? i.Topic.Name : null))
             .ToListAsync(cancellationToken);
 
         return new SocialInfoListResponse
@@ -129,20 +129,18 @@ public class SocialInfoService(AppDbContext dbContext) : ISocialInfoService
             .Include(i => i.Topic)
             .OrderByDescending(i => i.CollectedAt)
             .Take(count)
-            .Select(i => MapToResponse(i, i.Topic.Name))
+            .Select(i => MapToResponse(i, i.Topic != null ? i.Topic.Name : null))
             .ToListAsync(cancellationToken);
 
         return items;
     }
 
-    private static SocialInfoResponse MapToResponse(Models.Domain.SocialInfo info, string topicName)
+    private static SocialInfoResponse MapToResponse(Models.Domain.SocialInfo info, string? topicName)
     {
         return new SocialInfoResponse
         {
             Id = info.Id,
-            TopicId = info.TopicId,
-            TopicName = topicName,
-            TaskId = info.TaskId,
+            TopicName = topicName ?? "Unknown",
             Platform = info.Platform,
             SourceId = info.SourceId,
             SourceUrl = info.SourceUrl,

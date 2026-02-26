@@ -19,20 +19,9 @@ internal sealed partial class SocialInfoCreatedConsumer(
     {
       LogProcessingSocialInfo(logger, message.InfoId, message.GeneratedFromTaskId);
 
-      var task = await dbContext.SocialListeningTasks
-          .FirstOrDefaultAsync(t => t.Id == message.GeneratedFromTaskId, context.CancellationToken);
-
-      if (task == null)
-      {
-        LogTaskNotFound(logger, message.GeneratedFromTaskId, message.InfoId);
-        return;
-      }
-
       var socialInfo = new SocialInfo
       {
         Id = message.InfoId,
-        TopicId = task.TopicId,
-        TaskId = message.GeneratedFromTaskId,
         Platform = message.Platform.ToString(),
         SourceId = message.OriginalId,
         SourceUrl = message.OriginalUrl,
@@ -42,9 +31,6 @@ internal sealed partial class SocialInfoCreatedConsumer(
       };
 
       dbContext.SocialInfos.Add(socialInfo);
-
-      // Also update task's items collected count
-      task.ItemsCollected++;
 
       await dbContext.SaveChangesAsync(context.CancellationToken);
 

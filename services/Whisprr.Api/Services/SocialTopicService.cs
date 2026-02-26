@@ -225,9 +225,7 @@ public class SocialTopicService(AppDbContext dbContext) : ISocialTopicService
             RecentInfo = topic.SocialInfos?.Select(i => new SocialInfoResponse
             {
                 Id = i.Id,
-                TopicId = i.TopicId,
                 TopicName = topic.Name,
-                TaskId = i.TaskId,
                 Platform = i.Platform,
                 SourceId = i.SourceId,
                 SourceUrl = i.SourceUrl,
