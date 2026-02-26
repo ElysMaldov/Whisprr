@@ -2,6 +2,7 @@
 
 - [Whisprr](#whisprr)
   - [Goal](#goal)
+  - [AI Usage and Learning](#ai-usage-and-learning)
   - [Remarks](#remarks)
   - [Features](#features)
   - [Progress](#progress)
@@ -50,6 +51,15 @@ With this project, I aim to learn more "pure" microservice architecture where ea
 their own databases and storing their own data as needed. The services communicate with eachother
 using a message broker. Another aim of this project is to know how much C# and .NET I could
 learn and apply in limited time.
+
+## AI Usage and Learning
+
+I used Gemini to help learn and understand more about the .NET and C# ecosystem quicker
+than reading StackOverflow or other sources. However, I watched a couple of videos by Milan Jovanonic to learn about .NET especially [MassTransit and RabbitMQ](https://youtu.be/MzC0PgYocmk?si=8P0O4Bk_NlMY6WX0).
+
+I also utilized Kimi Code to help plan and implement some services according to the plans and architecture I envisoned and written before in Obsidian. Even with using AI, it helped me to understand how a .NET project can be setup and organized.
+
+The AI agents I used wasn't perfect though, Kimi kept making mistakes such as not using an exisitng file and duplicating code. That's why I reviewed their work as much as possible, ask them to refactor according to my vision, before commiting their changes.
 
 ## Remarks
 
