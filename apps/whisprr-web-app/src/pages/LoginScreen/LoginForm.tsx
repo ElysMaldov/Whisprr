@@ -1,0 +1,117 @@
+"use client";
+import { Password } from "@/components/password";
+import { Button } from "@/components/ui/button";
+import {
+  Field,
+  FieldContent,
+  FieldError,
+  FieldGroup,
+  FieldLabel
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm } from "react-hook-form";
+import * as z from "zod";
+import { LoginSchema } from "./LoginSchema";
+import { useLogin } from "@/hooks/useLogin";
+import { useNavigate } from "@tanstack/react-router";
+
+type Schema = z.infer<typeof LoginSchema>;
+
+export interface LoginFormProps {}
+
+export function LoginForm({}: LoginFormProps) {
+  const { mutateAsync: login, isPending } = useLogin();
+  const navigate = useNavigate();
+
+  const form = useForm<Schema>({
+    resolver: zodResolver(LoginSchema),
+    defaultValues: {
+      email: "",
+      password: ""
+    }
+  });
+
+  const handleSubmit = form.handleSubmit(async (data: Schema) => {
+    try {
+      await login(data);
+      form.reset();
+      navigate({
+        to: "/dashboard"
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  });
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className="p-2 sm:p-5 md:p-8 w-full rounded-md gap-2 border max-w-3xl mx-auto"
+    >
+      <FieldGroup className="grid md:grid-cols-6 gap-4 mb-6">
+        <h1 className="mt-6 mb-1 font-extrabold text-3xl tracking-tight col-span-full">
+          Login
+        </h1>
+        <p className="tracking-wide text-muted-foreground mb-5 text-wrap text-sm col-span-full">
+          Login to create an account
+        </p>
+
+        <Controller
+          name="email"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field
+              data-invalid={fieldState.invalid}
+              className="gap-1 col-span-full"
+            >
+              <FieldLabel htmlFor="email">Email </FieldLabel>
+              <Input
+                {...field}
+                id="email"
+                type="text"
+                onChange={(e) => {
+                  field.onChange(e.target.value);
+                }}
+                aria-invalid={fieldState.invalid}
+                placeholder="Enter your Email"
+              />
+
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+
+        <Controller
+          name="password"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field
+              data-invalid={fieldState.invalid}
+              className="gap-1 col-span-full"
+            >
+              <FieldContent className="gap-0.5">
+                <FieldLabel htmlFor="password">Password</FieldLabel>
+              </FieldContent>
+              <Password
+                {...field}
+                aria-invalid={fieldState.invalid}
+                id="password"
+                placeholder="Password"
+              />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+      </FieldGroup>
+      <div className="flex justify-end items-center w-full">
+        <Button
+          disabled={isPending}
+          type="submit"
+        >
+          {isPending ? "Submitting..." : "Submit"}
+        </Button>
+      </div>
+    </form>
+  );
+}

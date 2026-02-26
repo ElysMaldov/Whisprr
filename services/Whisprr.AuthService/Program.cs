@@ -7,14 +7,14 @@ builder
     .AddAuthDbContext()
     .AddMessageBroker()
     .AddAuthServices()
+    .AddApiServices()
     .AddApiDocumentation();
 
 var app = builder.Build();
 
 app
     .UseApiDocumentation()
-    .UseAuthServices();
-
-await app.InitializeDatabaseAsync();
+    .UseAuthServices()
+    .UseApiServices();
 
 app.Run();
