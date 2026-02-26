@@ -19,10 +19,20 @@ internal sealed partial class SocialInfoCreatedConsumer(
     {
       LogProcessingSocialInfo(logger, message.InfoId, message.GeneratedFromTaskId);
 
+      var platform = message.Platform.ToString();
+      var exists = await dbContext.SocialInfos
+          .AnyAsync(i => i.Platform == platform && i.SourceId == message.OriginalId, context.CancellationToken);
+
+      if (exists)
+      {
+        LogSocialInfoAlreadyExists(logger, message.OriginalId, platform);
+        return;
+      }
+
       var socialInfo = new SocialInfo
       {
         Id = message.InfoId,
-        Platform = message.Platform.ToString(),
+        Platform = platform,
         SourceId = message.OriginalId,
         SourceUrl = message.OriginalUrl,
         Content = message.Content,
@@ -48,6 +58,9 @@ internal sealed partial class SocialInfoCreatedConsumer(
 
   [LoggerMessage(Level = LogLevel.Warning, Message = "Task {TaskId} not found for social info {InfoId}. Skipping.")]
   static partial void LogTaskNotFound(ILogger<SocialInfoCreatedConsumer> logger, Guid taskId, Guid infoId);
+
+  [LoggerMessage(Level = LogLevel.Information, Message = "Social info {SourceId} from {Platform} already exists. Skipping.")]
+  static partial void LogSocialInfoAlreadyExists(ILogger<SocialInfoCreatedConsumer> logger, string sourceId, string platform);
 
   [LoggerMessage(Level = LogLevel.Information, Message = "Social info {InfoId} saved successfully")]
   static partial void LogSocialInfoSaved(ILogger<SocialInfoCreatedConsumer> logger, Guid infoId);
