@@ -40,7 +40,8 @@
   - [Todos](#todos)
 
 
-A social listening app built with microservice architecture and publisher/consumer pattern.
+A social listening app built with microservice architecture and publisher/consumer pattern. This is an improved version of
+the [distributed monolith version](https://github.com/ElysMaldov/WhisprrDistributedMonolith).
 
 ## Goal
 
