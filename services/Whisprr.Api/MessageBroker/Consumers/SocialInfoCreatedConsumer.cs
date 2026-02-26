@@ -4,11 +4,15 @@ using Whisprr.Api.Data;
 using Whisprr.Api.Models.Domain;
 using Whisprr.Contracts.Events;
 
+using Whisprr.Api.Services;
+using Whisprr.Api.Models.DTOs.SocialInfo;
+
 namespace Whisprr.Api.MessageBroker.Consumers;
 
 internal sealed partial class SocialInfoCreatedConsumer(
   ILogger<SocialInfoCreatedConsumer> logger,
-  AppDbContext dbContext
+  AppDbContext dbContext,
+  INotificationService notificationService
   ) : IConsumer<SocialInfoCreated>
 {
   public async Task Consume(ConsumeContext<SocialInfoCreated> context)
@@ -29,9 +33,15 @@ internal sealed partial class SocialInfoCreatedConsumer(
         return;
       }
 
+      var task = await dbContext.SocialListeningTasks
+          .Include(t => t.Topic)
+          .FirstOrDefaultAsync(t => t.Id == message.GeneratedFromTaskId, context.CancellationToken);
+
       var socialInfo = new SocialInfo
       {
         Id = message.InfoId,
+        TopicId = task?.TopicId,
+        TaskId = task?.Id,
         Platform = platform,
         SourceId = message.OriginalId,
         SourceUrl = message.OriginalUrl,
@@ -42,9 +52,33 @@ internal sealed partial class SocialInfoCreatedConsumer(
 
       dbContext.SocialInfos.Add(socialInfo);
 
+      if (task != null)
+      {
+        task.ItemsCollected++;
+      }
+
       await dbContext.SaveChangesAsync(context.CancellationToken);
 
       LogSocialInfoSaved(logger, message.InfoId);
+
+      // Broadcast to clients
+      var response = new SocialInfoResponse
+      {
+        Id = socialInfo.Id,
+        TopicId = socialInfo.TopicId,
+        TopicName = task?.Topic?.Name ?? "Unknown",
+        TaskId = socialInfo.TaskId,
+        Platform = socialInfo.Platform,
+        SourceId = socialInfo.SourceId,
+        SourceUrl = socialInfo.SourceUrl,
+        Content = socialInfo.Content,
+        Author = socialInfo.Author,
+        PostedAt = socialInfo.PostedAt,
+        CollectedAt = socialInfo.CollectedAt,
+        SentimentScore = socialInfo.SentimentScore
+      };
+
+      await notificationService.NotifyNewInfoToAllAsync(response, context.CancellationToken);
     }
     catch (Exception ex)
     {

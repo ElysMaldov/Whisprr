@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import * as signalR from "@microsoft/signalr";
+import type { SocialInfo } from "@/models/domain/social-info";
 
 const HUB_URL = import.meta.env.VITE_API_URL
   ? `${import.meta.env.VITE_API_URL.replace("/api", "")}/hubs/social`
@@ -76,7 +77,7 @@ export const useSocialTopicHub = () => {
   }, []);
 
   // Subscribe to new info events
-  const onNewInfo = (callback: (info: unknown) => void) => {
+  const onNewInfo = (callback: (info: SocialInfo) => void) => {
     if (connectionRef.current) {
       connectionRef.current.on("OnNewInfo", callback);
     }

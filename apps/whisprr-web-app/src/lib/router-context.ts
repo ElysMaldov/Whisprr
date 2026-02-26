@@ -1,4 +1,6 @@
 import type { AuthState } from "@/store/auth-store";
+import type { QueryClient } from "@tanstack/react-query";
+import type { AuthRepository } from "@/data/repositories/auth";
 
 /**
  * Router Context Interface
@@ -26,4 +28,6 @@ import type { AuthState } from "@/store/auth-store";
  */
 export interface RouterContext {
   auth: AuthState;
+  queryClient: QueryClient;
+  authRepository: AuthRepository;
 }

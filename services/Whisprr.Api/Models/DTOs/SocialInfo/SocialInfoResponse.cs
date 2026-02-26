@@ -6,9 +6,9 @@ namespace Whisprr.Api.Models.DTOs.SocialInfo;
 public class SocialInfoResponse
 {
     public Guid Id { get; set; }
-    public Guid TopicId { get; set; }
-    public required string TopicName { get; set; }
-    public Guid TaskId { get; set; }
+    public Guid? TopicId { get; set; }
+    public string? TopicName { get; set; }
+    public Guid? TaskId { get; set; }
     public required string Platform { get; set; }
     public required string SourceId { get; set; }
     public string? SourceUrl { get; set; }

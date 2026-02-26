@@ -25,6 +25,19 @@ public partial class NotificationService(
         }
     }
 
+    public async Task NotifyNewInfoToAllAsync(SocialInfoResponse info, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await _hubContext.Clients.All.OnNewInfo(info);
+            LogBroadcastToAll(_logger);
+        }
+        catch (Exception ex)
+        {
+            LogBroadcastToAllFailed(_logger, ex);
+        }
+    }
+
     public async Task NotifyTaskStatusChangedAsync(Guid topicId, TaskSummaryResponse task, CancellationToken cancellationToken = default)
     {
         try
@@ -60,6 +73,16 @@ public partial class NotificationService(
         Level = LogLevel.Error,
         Message = "Failed to broadcast new info to topic {TopicId}")]
     static partial void LogNewInfoBroadcastFailed(ILogger<NotificationService> logger, Guid topicId, Exception ex);
+
+    [LoggerMessage(
+        Level = LogLevel.Debug,
+        Message = "Broadcasted new info to all connected clients")]
+    static partial void LogBroadcastToAll(ILogger<NotificationService> logger);
+
+    [LoggerMessage(
+        Level = LogLevel.Error,
+        Message = "Failed to broadcast info to all clients")]
+    static partial void LogBroadcastToAllFailed(ILogger<NotificationService> logger, Exception ex);
 
     [LoggerMessage(
         Level = LogLevel.Debug,

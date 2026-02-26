@@ -5,7 +5,7 @@ import type { RefreshTokenRequest } from "@/models/dtos/auth/refresh-token-reque
 import type { RegisterRequest } from "@/models/dtos/auth/register-request";
 import { AuthService, authService } from "../services/auth";
 
-class AuthRepository {
+export class AuthRepository {
   private authService: AuthService;
 
   constructor(authService: AuthService) {

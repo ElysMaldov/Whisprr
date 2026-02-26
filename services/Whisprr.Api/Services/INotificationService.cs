@@ -12,6 +12,11 @@ public interface INotificationService
     /// Notify subscribers that new social info was collected.
     /// </summary>
     Task NotifyNewInfoAsync(Guid topicId, SocialInfoResponse info, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Notify all connected clients that new social info was collected.
+    /// </summary>
+    Task NotifyNewInfoToAllAsync(SocialInfoResponse info, CancellationToken cancellationToken = default);
     
     /// <summary>
     /// Notify subscribers that a task status has changed.
